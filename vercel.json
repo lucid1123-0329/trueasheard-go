@@ -1,14 +1,12 @@
 {
-  "redirects": [
+  "rewrites": [
     {
-      "source": "/",
-      "destination": "https://blog.naver.com/trueasheard",
-      "permanent": false
+      "source": "/og-image.png",
+      "destination": "/public/og-image.svg"
     },
     {
-      "source": "/:code",
-      "destination": "https://script.google.com/macros/s/AKfycbz0HcYFu1zEAe7NjEmf3mT7oC2o6ZL84AxzQXryAwVX5gC5i7FBljeWdaUPVNx86Ct2/exec?go=:code",
-      "permanent": false
+      "source": "/(.*)",
+      "destination": "/api/$1"
     }
   ]
 }
