@@ -1,5 +1,5 @@
 export default function handler(req, res) {
-  const { code } = req.query;
+  const code = req.query.code || '';
   
   if (!code) {
     res.redirect(302, 'https://blog.naver.com/trueasheard');
