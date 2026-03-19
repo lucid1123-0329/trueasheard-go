@@ -1,6 +1,14 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/api/redirect" },
-    { "source": "/:code", "destination": "/api/redirect?code=:code" }
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://blog.naver.com/trueasheard",
+      "permanent": false
+    },
+    {
+      "source": "/:code",
+      "destination": "https://script.google.com/macros/s/AKfycbz0HcYFu1zEAe7NjEmf3mT7oC2o6ZL84AxzQXryAwVX5gC5i7FBljeWdaUPVNx86Ct2/exec?go=:code",
+      "permanent": false
+    }
   ]
 }
