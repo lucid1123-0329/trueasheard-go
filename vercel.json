@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/og-image.png",
-      "destination": "/public/og-image.svg"
+      "destination": "/public/og-image.png"
     },
     {
       "source": "/(.*)",

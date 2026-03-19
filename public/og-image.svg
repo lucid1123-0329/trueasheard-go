@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#1a237e"/>
-  <rect x="40" y="40" width="1120" height="550" rx="20" fill="white" opacity="0.95"/>
-  <text x="600" y="260" text-anchor="middle" font-family="sans-serif" font-size="64" font-weight="bold" fill="#1a237e">명불허전학원</text>
-  <text x="600" y="340" text-anchor="middle" font-family="sans-serif" font-size="36" fill="#505050">AI 기반 학습 상담 리포트</text>
-  <text x="600" y="420" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#999">MaMa-Asst · 데이터 기반 맞춤 학습 분석</text>
-  <text x="600" y="520" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#C41E3A">서울시 강동구 고덕로 433, 이레빌딩 3층</text>
-</svg>
