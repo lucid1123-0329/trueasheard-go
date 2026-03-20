@@ -1,12 +1,13 @@
 {
-  "rewrites": [
+  "version": 2,
+  "routes": [
     {
-      "source": "/og-image.png",
-      "destination": "/public/og-image.png"
+      "src": "/og-image.png",
+      "dest": "/public/og-image.png"
     },
     {
-      "source": "/(.*)",
-      "destination": "/api/$1"
+      "src": "/(.*)",
+      "dest": "/api/index.js"
     }
   ]
 }
