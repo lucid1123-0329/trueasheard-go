@@ -155,9 +155,9 @@ input,button,select,textarea{font-family:inherit}button{cursor:pointer;border:no
 <div class="pg on" id="pg-dashboard">
   <div class="sts">
     <div class="sc"><div class="sl">👥 전체 학생</div><div class="sv" id="st0">—</div></div>
-    <div class="sc"><div class="sl">✅ 상담 완료</div><div class="sv" id="st1">—</div></div>
-    <div class="sc"><div class="sl">⏰ 상담 예정</div><div class="sv" id="st2">—</div><div class="ss">12~16일 경과</div></div>
-    <div class="sc"><div class="sl">⚠️ 상담 지연</div><div class="sv" id="st3">—</div><div class="ss">16일 이상</div></div>
+    <div class="sc"><div class="sl">✅ 여유 (D-4+)</div><div class="sv" id="st1">—</div></div>
+    <div class="sc"><div class="sl">⏰ 임박 (D-3 이하)</div><div class="sv" id="st2">—</div><div class="ss">3일 내 상담 필요</div></div>
+    <div class="sc"><div class="sl">⚠️ 지연 (초과)</div><div class="sv" id="st3">—</div><div class="ss">예정일 경과</div></div>
   </div>
   <div class="ap" id="aP" style="display:none"><h3>📅 곧 상담이 필요한 학생</h3><div id="aL"></div></div>
   <div class="tb"><div class="sbox"><span>🔍</span><input type="text" id="sI" placeholder="학생 이름 검색..." oninput="render()"></div>
@@ -303,10 +303,64 @@ function populateSelects(){var opts=S.names.map(n=>'<option value="'+esc(n)+'">'
 
 // ─── 대시보드 ───
 function loadDash(){sLd(true);apiGet('cp_dashboard',{},function(r){sLd(false);if(r.success){S.students=r.students||[];calcSt();renderAl();render()}else toast(r.error||'로드 실패','te')})}
-function gSt(s){var keys=Object.keys(s);var lk=keys.find(k=>k.indexOf('최근상담일')>-1||k.indexOf('2주상담일')>-1||k.indexOf('마지막상담일')>-1);var v=lk?s[lk]:null;if(!v||v===''||v==='-')return{st:'new',lb:'신규',d:null};var dt=new Date(v);if(isNaN(dt.getTime()))return{st:'new',lb:'신규',d:null};var diff=Math.floor((new Date()-dt)/864e5);if(diff>16)return{st:'overdue',lb:'지연 ('+diff+'일)',d:diff};if(diff>=12)return{st:'soon',lb:diff+'일 경과',d:diff};return{st:'normal',lb:'정상',d:diff}}
+
+// 실제 컬럼: 학생명[0], 학년[1], 1차상담일[2], 최종상담일[3], 상담횟수[4], 다음예정일[5], 상담상태[6](D-N), 수강과목[7], 학부모최근상담일[8], 회차[9], 학부모요청[10], 상담요약[11]
+function gV(s,keyword){var keys=Object.keys(s);var k=keys.find(function(k){return k.indexOf(keyword)>-1});return k?s[k]:''}
+function gSt(s){
+  // "상담 상태" 컬럼에서 D-N 파싱
+  var stVal=String(gV(s,'상담 상태')||gV(s,'상태')||'').trim();
+  var dMatch=stVal.match(/D-?(\-?\d+)/i);
+  if(dMatch){
+    var daysLeft=parseInt(dMatch[1]);
+    if(daysLeft<=0)return{st:'overdue',lb:'⚠️ 지연 ('+Math.abs(daysLeft)+'일 초과)',d:daysLeft,dd:stVal};
+    if(daysLeft<=3)return{st:'soon',lb:'D-'+daysLeft+' 임박',d:daysLeft,dd:stVal};
+    return{st:'normal',lb:'D-'+daysLeft,d:daysLeft,dd:stVal}
+  }
+  // D-N 없으면 최종 상담일 기준
+  var lastDate=String(gV(s,'최종 상담일')||gV(s,'최종상담일')||gV(s,'최근상담일')||'').trim();
+  if(!lastDate||lastDate==='-')return{st:'new',lb:'신규',d:null,dd:''};
+  var dt=new Date(lastDate.replace(/\.\s*/g,'-'));
+  if(isNaN(dt.getTime()))return{st:'new',lb:'신규',d:null,dd:''};
+  var diff=Math.floor((new Date()-dt)/864e5);
+  if(diff>16)return{st:'overdue',lb:'지연 ('+diff+'일)',d:-diff,dd:''};
+  if(diff>=12)return{st:'soon',lb:diff+'일 경과',d:14-diff,dd:''};
+  return{st:'normal',lb:'정상',d:14-diff,dd:''}
+}
 function calcSt(){var t=0,ok=0,sn=0,ov=0;S.students.forEach(s=>{t++;var x=gSt(s).st;if(x==='normal')ok++;else if(x==='soon')sn++;else if(x==='overdue')ov++});$('st0').textContent=t;$('st1').textContent=ok;$('st2').textContent=sn;$('st3').textContent=ov}
-function renderAl(){var urg=S.students.map(s=>Object.assign({},s,{_s:gSt(s)})).filter(s=>s._s.st==='overdue'||s._s.st==='soon').sort((a,b)=>(b._s.d||0)-(a._s.d||0));var p=$('aP'),l=$('aL');if(!urg.length){p.style.display='none';return}p.style.display='block';l.innerHTML=urg.slice(0,8).map(s=>{var c=s._s.st==='overdue'?'var(--rd)':'var(--or)';var nm=esc(String(s[Object.keys(s)[0]]||'—'));return'<div class="si"><span class="sd" style="background:'+c+'"></span><span class="nm">'+nm+'</span><span class="dt">'+esc(s._s.lb)+'</span></div>'}).join('')}
-function render(){var gd=$('gd'),em=$('em'),q=$('sI').value.trim().toLowerCase(),cols=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6'];var list=S.students.filter(s=>{var nm=String(s[Object.keys(s)[0]]||'').toLowerCase();if(q&&nm.indexOf(q)===-1)return false;if(S.filter==='all')return true;return gSt(s).st===S.filter});if(!list.length){gd.innerHTML='';em.style.display='block';return}em.style.display='none';gd.innerHTML=list.map((s,i)=>{var keys=Object.keys(s).filter(k=>k.charAt(0)!=='_');var nm=String(s[keys[0]]||'—');var st=gSt(s);var col=cols[i%cols.length];var pK=keys.find(k=>k.indexOf('학부모')>-1&&k.indexOf('상담일')>-1);var cK=keys.find(k=>k.indexOf('상담회차')>-1||k.indexOf('상담횟수')>-1);var stc=st.st==='normal'?'sn':st.st==='soon'?'ss2':st.st==='overdue'?'so':'snw';return'<div class="cd" onclick="oMod(\''+esc(nm)+'\')"><div class="ch"><div class="cav" style="background:'+col+'">'+esc(nm.charAt(0))+'</div><div><div class="cn">'+esc(nm)+'</div><div class="cm">'+(st.d!==null?st.d+'일 전 상담':'상담 기록 없음')+'</div></div><span class="bds '+stc+'">'+esc(st.lb)+'</span></div><div class="cb"><div class="ir"><span class="l">학부모 상담</span><span class="v">'+esc(String(pK?s[pK]:'—'))+'</span></div><div class="ir"><span class="l">상담 회차</span><span class="v">'+esc(String(cK?s[cK]:'—'))+'</span></div></div><div class="ca" onclick="event.stopPropagation()"><button class="btn bp bs" onclick="startSessionFor(\''+esc(nm)+'\')">🩺 상담</button><button class="btn bo bs" onclick="viewReportsFor(\''+esc(nm)+'\')">📄 리포트</button></div></div>'}).join('')}
+function renderAl(){
+  var urg=S.students.map(s=>Object.assign({},s,{_s:gSt(s)})).filter(s=>s._s.st==='overdue'||s._s.st==='soon').sort((a,b)=>(a._s.d||0)-(b._s.d||0));
+  var p=$('aP'),l=$('aL');if(!urg.length){p.style.display='none';return}
+  p.style.display='block';
+  l.innerHTML=urg.slice(0,10).map(s=>{
+    var c=s._s.st==='overdue'?'var(--rd)':'var(--or)';
+    var nm=esc(String(gV(s,'학생명')||s[Object.keys(s)[0]]||'—'));
+    return'<div class="si"><span class="sd" style="background:'+c+'"></span><span class="nm">'+nm+'</span><span class="dt">'+esc(s._s.lb)+'</span></div>'
+  }).join('')
+}
+function render(){
+  var gd=$('gd'),em=$('em'),q=$('sI').value.trim().toLowerCase();
+  var cols=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6'];
+  var list=S.students.filter(s=>{
+    var nm=String(gV(s,'학생명')||s[Object.keys(s)[0]]||'').toLowerCase();
+    if(q&&nm.indexOf(q)===-1)return false;
+    if(S.filter==='all')return true;
+    return gSt(s).st===S.filter
+  });
+  if(!list.length){gd.innerHTML='';em.style.display='block';return}
+  em.style.display='none';
+  gd.innerHTML=list.map((s,i)=>{
+    var nm=String(gV(s,'학생명')||s[Object.keys(s)[0]]||'—');
+    var st=gSt(s);
+    var col=cols[i%cols.length];
+    var grade=gV(s,'학년')||'';
+    var subj=gV(s,'수강 과목')||gV(s,'수강과목')||'';
+    var cnt=gV(s,'상담 횟수')||gV(s,'상담횟수')||'';
+    var next=gV(s,'다음 예정일')||gV(s,'다음예정일')||'';
+    var pDate=gV(s,'학부모 최근 상담일')||gV(s,'학부모최근상담일')||'';
+    var stc=st.st==='normal'?'sn':st.st==='soon'?'ss2':st.st==='overdue'?'so':'snw';
+    return'<div class="cd" onclick="oMod(\''+esc(nm)+'\')"><div class="ch"><div class="cav" style="background:'+col+'">'+esc(nm.charAt(0))+'</div><div><div class="cn">'+esc(nm)+'</div><div class="cm">'+esc(grade)+(subj?' · '+esc(subj):'')+'</div></div><span class="bds '+stc+'">'+esc(st.dd||st.lb)+'</span></div><div class="cb"><div class="ir"><span class="l">상담 횟수 / 다음 예정</span><span class="v">'+esc(String(cnt))+'회 / '+esc(String(next))+'</span></div><div class="ir"><span class="l">학부모 상담</span><span class="v">'+esc(String(pDate||'—'))+'</span></div></div><div class="ca" onclick="event.stopPropagation()"><button class="btn bp bs" onclick="startSessionFor(\''+esc(nm)+'\')">🩺 상담</button><button class="btn bo bs" onclick="viewReportsFor(\''+esc(nm)+'\')">📄 리포트</button></div></div>'
+  }).join('')
+}
 function setF(f){S.filter=f;document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('on',b.dataset.f===f));render()}
 
 // ─── 2. 상담 세션 (기존 SessionTemplate 로직 이식) ───
@@ -414,7 +468,7 @@ function tSB(){$('sb').classList.toggle('open');$('mov').classList.toggle('open'
 function cSB(){$('sb').classList.remove('open');$('mov').classList.remove('open')}
 
 // ─── 모달 ───
-function oMod(nm){var s=S.students.find(x=>String(x[Object.keys(x)[0]])===nm);if(!s)return;$('mT').textContent=nm+' — 상세 정보';var keys=Object.keys(s).filter(k=>k.charAt(0)!=='_');var h='';keys.forEach(k=>{var v=s[k];if(v===''||v==null)return;h+='<div class="ir" style="padding:6px 0;border-bottom:1px solid var(--bd2)"><span class="l">'+esc(k)+'</span><span class="v">'+esc(String(v))+'</span></div>'});$('mB').innerHTML=h;$('mA').onclick=()=>{cMod();startSessionFor(nm)};$('modal').classList.add('on')}
+function oMod(nm){var s=S.students.find(x=>String(gV(x,'학생명')||x[Object.keys(x)[0]])===nm);if(!s)return;$('mT').textContent=nm+' — 상세 정보';var keys=Object.keys(s).filter(k=>k.charAt(0)!=='_');var h='';keys.forEach(k=>{var v=s[k];if(v===''||v==null)return;h+='<div class="ir" style="padding:6px 0;border-bottom:1px solid var(--bd2)"><span class="l">'+esc(k)+'</span><span class="v">'+esc(String(v))+'</span></div>'});$('mB').innerHTML=h;$('mA').onclick=()=>{cMod();startSessionFor(nm)};$('modal').classList.add('on')}
 function cMod(){$('modal').classList.remove('on')}
 
 // ─── 유틸 ───
