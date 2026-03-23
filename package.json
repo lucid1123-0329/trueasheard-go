@@ -1,6 +1,1 @@
-{
-  "name": "trueasheard-go",
-  "version": "1.0.0",
-  "description": "명불허전학원 단축 URL",
-  "private": true
-}
+{"name":"trueasheard-go","version":"1.0.0","description":"명불허전학원 상담 포털 + 단축 URL","type":"module","private":true}
