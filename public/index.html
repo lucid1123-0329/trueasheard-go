@@ -170,46 +170,46 @@ input,button,select,textarea{font-family:inherit}button{cursor:pointer;border:no
 <div class="pg" id="pg-session">
   <div class="panel">
     <h3>🩺 2주 학생 상담 세션</h3>
-    <div class="fld"><label>학생 선택</label>
-      <select id="ssStudent" onchange="onSessionStudentChange()"><option value="">— 학생을 선택하세요 —</option></select>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <div class="fld" style="flex:1;margin:0;min-width:150px"><label>학생 선택</label>
+        <select id="ssStudent"><option value="">— 학생 선택 —</option></select></div>
+      <div class="fld" style="flex:1;margin:0;min-width:150px"><label>상담자</label>
+        <select id="ssCounselor"><option value="">— 상담자 —</option><option value="손정화">손정화</option><option value="박건영">박건영</option></select></div>
     </div>
-    <!-- 스텝 바 -->
-    <div class="step-bar" id="stepBar"><div class="step-dot cur" id="sd0"></div><div class="step-dot" id="sd1"></div><div class="step-dot" id="sd2"></div><div class="step-dot" id="sd3"></div></div>
-    <!-- Step 0: AI 브리핑 -->
-    <div class="step-content on" id="stp0">
-      <div class="panel" style="background:var(--pri2);border-color:#c7d9fd">
-        <h3>🤖 AI 사전 브리핑</h3>
-        <p id="briefingText" style="white-space:pre-wrap">학생을 선택하면 AI 브리핑이 생성됩니다.</p>
-      </div>
-      <button class="btn bp" onclick="goStep(1)" id="btnStep1" disabled>다음: 체크리스트 →</button>
+    <button class="btn bp" onclick="generateBriefing()" id="briefBtn">🤖 AI 브리핑 생성 (약 30초)</button>
+  </div>
+  <!-- AI 브리핑 결과 -->
+  <div class="panel" id="briefResult" style="display:none">
+    <h3>🤖 AI 사전 브리핑</h3>
+    <div style="font-size:.82rem;color:var(--tx3);margin-bottom:10px" id="bp_name">—</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:.68rem;color:var(--tx3)">성향</div><div style="font-size:.8rem;font-weight:600" id="bp_disp">—</div></div>
+      <div style="padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:.68rem;color:var(--tx3)">동기</div><div style="font-size:.8rem;font-weight:600" id="bp_moti">—</div></div>
+      <div style="padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:.68rem;color:var(--tx3)">과제</div><div style="font-size:.8rem;font-weight:600" id="bp_chal">—</div></div>
     </div>
-    <!-- Step 1: 체크리스트 -->
-    <div class="step-content" id="stp1">
-      <div class="ck-group"><label class="ck-title">SA — 자기진단 (학생 스스로 평가)</label>
-        <div class="ck-options" data-ck="SA"><div class="ck-opt" onclick="selCk(this)">매우 잘함</div><div class="ck-opt" onclick="selCk(this)">대체로 잘함</div><div class="ck-opt" onclick="selCk(this)">보통</div><div class="ck-opt" onclick="selCk(this)">노력 부족</div></div></div>
-      <div class="ck-group"><label class="ck-title">OB — 관찰 (상담자 관찰 평가)</label>
-        <div class="ck-options" data-ck="OB"><div class="ck-opt" onclick="selCk(this)">매우 잘함</div><div class="ck-opt" onclick="selCk(this)">대체로 잘함</div><div class="ck-opt" onclick="selCk(this)">보통</div><div class="ck-opt" onclick="selCk(this)">노력 부족</div></div></div>
-      <div class="ck-group"><label class="ck-title">BL — 저해요인</label>
-        <div class="fld" style="margin:0"><textarea id="ckBL" placeholder="학습 저해요인을 기록하세요..."></textarea></div></div>
-      <div class="ck-group"><label class="ck-title">PF — 이행평가 (이전 목표 달성도)</label>
-        <div class="ck-options" data-ck="PF"><div class="ck-opt" onclick="selCk(this)">100% 달성</div><div class="ck-opt" onclick="selCk(this)">대체로 잘함</div><div class="ck-opt" onclick="selCk(this)">보통</div><div class="ck-opt" onclick="selCk(this)">미이행</div></div></div>
-      <div style="display:flex;gap:8px"><button class="btn bo" onclick="goStep(0)">← 이전</button><button class="btn bp" onclick="goStep(2)">다음: 목표 설정 →</button></div>
-    </div>
-    <!-- Step 2: 목표 설정 -->
-    <div class="step-content" id="stp2">
-      <div class="fld"><label>다음 2주 학습 목표</label><textarea id="ssGoal" rows="4" placeholder="구체적인 목표를 입력하세요...&#10;예: 수학 집중 + 영어 단어 매일 30개 암기"></textarea></div>
-      <div class="fld"><label>상담 유형</label>
-        <select id="ssType"><option value="정기">정기 (2주)</option><option value="추가">추가 상담</option><option value="긴급">긴급</option></select></div>
-      <div style="display:flex;gap:8px"><button class="btn bo" onclick="goStep(1)">← 이전</button><button class="btn bp" onclick="goStep(3)">다음: 확인 →</button></div>
-    </div>
-    <!-- Step 3: 확인 & 저장 -->
-    <div class="step-content" id="stp3">
-      <div class="panel" style="background:#fefce8;border-color:#fde68a">
-        <h3>📋 상담 내용 확인</h3>
-        <div id="sessionSummary"></div>
-      </div>
-      <div style="display:flex;gap:8px"><button class="btn bo" onclick="goStep(2)">← 수정</button><button class="btn bg" onclick="saveSession()" id="btnSaveSession">✅ 상담 완료 → 대기열 저장</button></div>
-    </div>
+    <div style="font-size:.78rem;font-weight:600;margin-bottom:6px">📊 14일 지표</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px" id="metricsGrid"></div>
+    <div id="qualSummaries" style="margin-bottom:10px"></div>
+    <div id="prevGoalArea" style="margin-bottom:10px"></div>
+    <div id="followUpArea" style="margin-bottom:10px"></div>
+    <div style="font-size:.78rem;font-weight:600;margin-bottom:6px" id="agendaTheme">💬 상담 어젠다</div>
+    <div id="discussionPts" style="margin-bottom:10px"></div>
+  </div>
+  <!-- 체크리스트 입력 -->
+  <div class="panel" id="checklistPanel" style="display:none">
+    <h3>📋 상담 체크리스트</h3>
+    <div class="fld"><label>SA — 학생 자기진단 <span style="color:var(--rd)">*</span></label>
+      <select id="ckSA"><option value="">선택</option><option>매우 잘함</option><option>대체로 잘함</option><option>보통</option><option>노력 부족</option></select></div>
+    <div class="fld"><label>OB — 상담자 관찰 (정서/태도) <span style="color:var(--rd)">*</span></label>
+      <select id="ckOB"><option value="">선택</option><option>매우 잘함</option><option>대체로 잘함</option><option>보통</option><option>노력 부족</option></select></div>
+    <div class="fld"><label>BL — 주요 저해요인</label>
+      <select id="ckBL" onchange="toggleBLInput()"><option value="없음">없음</option><option>휴대폰/게임 과다</option><option>수면 부족</option><option>학습 동기 저하</option><option>교우 관계</option><option>가정 환경</option><option value="기타">기타 (직접 입력)</option></select>
+      <input type="text" id="ckBL_custom" placeholder="저해 요인을 입력하세요" style="display:none;margin-top:6px"></div>
+    <div class="fld"><label>PF — 직전 목표 이행 <span style="color:var(--rd)">*</span></label>
+      <select id="ckPF"><option value="">선택</option><option>첫 상담 (직전 목표 없음)</option><option>100% 달성 (매우 잘함)</option><option>대체로 잘함 (80%)</option><option>보통 (50%)</option><option>노력 부족 (미이행)</option></select></div>
+    <div class="fld"><label>다음 2주 학습 목표 <span style="color:var(--rd)">*</span></label>
+      <textarea id="ssGoal" rows="3" placeholder="예: 학습량(국어-20분, 영어-30분, 수학-40분) + 수면 8시간 + 휴대폰 3시간"></textarea></div>
+    <button class="btn bg" onclick="completeSession()" id="btnComplete">✅ 상담 완료 — AI 분석 요청</button>
   </div>
 </div>
 
@@ -309,15 +309,83 @@ function renderAl(){var urg=S.students.map(s=>Object.assign({},s,{_s:gSt(s)})).f
 function render(){var gd=$('gd'),em=$('em'),q=$('sI').value.trim().toLowerCase(),cols=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6'];var list=S.students.filter(s=>{var nm=String(s[Object.keys(s)[0]]||'').toLowerCase();if(q&&nm.indexOf(q)===-1)return false;if(S.filter==='all')return true;return gSt(s).st===S.filter});if(!list.length){gd.innerHTML='';em.style.display='block';return}em.style.display='none';gd.innerHTML=list.map((s,i)=>{var keys=Object.keys(s).filter(k=>k.charAt(0)!=='_');var nm=String(s[keys[0]]||'—');var st=gSt(s);var col=cols[i%cols.length];var pK=keys.find(k=>k.indexOf('학부모')>-1&&k.indexOf('상담일')>-1);var cK=keys.find(k=>k.indexOf('상담회차')>-1||k.indexOf('상담횟수')>-1);var stc=st.st==='normal'?'sn':st.st==='soon'?'ss2':st.st==='overdue'?'so':'snw';return'<div class="cd" onclick="oMod(\''+esc(nm)+'\')"><div class="ch"><div class="cav" style="background:'+col+'">'+esc(nm.charAt(0))+'</div><div><div class="cn">'+esc(nm)+'</div><div class="cm">'+(st.d!==null?st.d+'일 전 상담':'상담 기록 없음')+'</div></div><span class="bds '+stc+'">'+esc(st.lb)+'</span></div><div class="cb"><div class="ir"><span class="l">학부모 상담</span><span class="v">'+esc(String(pK?s[pK]:'—'))+'</span></div><div class="ir"><span class="l">상담 회차</span><span class="v">'+esc(String(cK?s[cK]:'—'))+'</span></div></div><div class="ca" onclick="event.stopPropagation()"><button class="btn bp bs" onclick="startSessionFor(\''+esc(nm)+'\')">🩺 상담</button><button class="btn bo bs" onclick="viewReportsFor(\''+esc(nm)+'\')">📄 리포트</button></div></div>'}).join('')}
 function setF(f){S.filter=f;document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('on',b.dataset.f===f));render()}
 
-// ─── 2. 상담 세션 ───
-function startSessionFor(nm){go('session');$('ssStudent').value=nm;onSessionStudentChange()}
-function onSessionStudentChange(){var nm=$('ssStudent').value;if(!nm){$('briefingText').textContent='학생을 선택하면 AI 브리핑이 생성됩니다.';$('btnStep1').disabled=true;goStep(0);return}$('briefingText').textContent='AI 브리핑 생성 중...';$('btnStep1').disabled=true;apiGet('cp_briefingData',{student:nm},function(r){if(r.success&&r.data){var d=r.data;var txt='';if(typeof d==='string')txt=d;else if(d.briefing)txt=d.briefing;else txt=JSON.stringify(d,null,2);$('briefingText').textContent=txt;$('btnStep1').disabled=false}else{$('briefingText').textContent='브리핑 데이터가 없습니다. 체크리스트를 직접 작성하세요.';$('btnStep1').disabled=false}})}
-function goStep(n){S.sessionStep=n;for(var i=0;i<4;i++){$('stp'+i).classList.toggle('on',i===n);$('sd'+i).className='step-dot'+(i<n?' done':i===n?' cur':'')}if(n===3)buildSessionSummary()}
-function selCk(el){el.parentElement.querySelectorAll('.ck-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel')}
-function getCk(name){var g=document.querySelector('[data-ck="'+name+'"]');if(!g)return'';var sel=g.querySelector('.sel');return sel?sel.textContent:''}
-function buildSessionSummary(){var nm=$('ssStudent').value;var html='<div class="ir"><span class="l">학생</span><span class="v">'+esc(nm)+'</span></div>';html+='<div class="ir"><span class="l">SA (자기진단)</span><span class="v">'+esc(getCk('SA')||'미선택')+'</span></div>';html+='<div class="ir"><span class="l">OB (관찰)</span><span class="v">'+esc(getCk('OB')||'미선택')+'</span></div>';html+='<div class="ir"><span class="l">BL (저해요인)</span><span class="v">'+esc($('ckBL').value||'없음')+'</span></div>';html+='<div class="ir"><span class="l">PF (이행평가)</span><span class="v">'+esc(getCk('PF')||'미선택')+'</span></div>';html+='<div class="ir"><span class="l">목표</span><span class="v">'+esc($('ssGoal').value||'미입력')+'</span></div>';html+='<div class="ir"><span class="l">유형</span><span class="v">'+esc($('ssType').value)+'</span></div>';$('sessionSummary').innerHTML=html}
-function saveSession(){var nm=$('ssStudent').value;if(!nm){toast('학생을 선택하세요','te');return}var btn=$('btnSaveSession');btn.disabled=true;btn.textContent='저장 중...';var ck='SA:'+getCk('SA')+' | OB:'+getCk('OB')+' | BL:'+$('ckBL').value+' | PF:'+getCk('PF');apiPost('cp_saveSession',{data:{studentName:nm,counselor:S.user,checklist:ck,nextGoal:$('ssGoal').value,type:$('ssType').value,briefing:$('briefingText').textContent}},function(r){btn.disabled=false;btn.textContent='✅ 상담 완료 → 대기열 저장';if(r.success){toast('✅ '+nm+' 상담이 대기열에 저장되었습니다.','to');resetSessionForm();loadQ()}else toast(r.error||'저장 실패','te')})}
-function resetSessionForm(){$('ssStudent').value='';goStep(0);$('briefingText').textContent='학생을 선택하면 AI 브리핑이 생성됩니다.';$('btnStep1').disabled=true;document.querySelectorAll('.ck-opt.sel').forEach(o=>o.classList.remove('sel'));$('ckBL').value='';$('ssGoal').value=''}
+// ─── 2. 상담 세션 (기존 SessionTemplate 로직 이식) ───
+var BRIEFING_DATA = null;
+var SESSION_API_KEY = '';
+
+function startSessionFor(nm){go('session');$('ssStudent').value=nm}
+function generateBriefing(){
+  var nm=$('ssStudent').value,csl=$('ssCounselor').value;
+  if(!nm){toast('학생을 선택하세요','te');return}
+  if(!csl){toast('상담자를 선택하세요','te');return}
+  var btn=$('briefBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #fff;border-radius:50%;animation:spn .7s linear infinite;vertical-align:middle;margin-right:6px"></span>AI 분석 중... (30~60초)';
+  apiGet('cp_briefingData',{student:nm},function(r){
+    if(!r.success||!r.data||!r.data.prompt){btn.disabled=false;btn.textContent='🤖 AI 브리핑 생성 (약 30초)';toast(r.error||'데이터 없음','te');return}
+    SESSION_API_KEY=r.data.apiKey;
+    if(r.data.prevGoal){$('prevGoalArea').innerHTML='<div style="padding:10px;background:var(--or2);border-radius:8px;border-left:3px solid var(--or);font-size:.82rem"><b>📋 직전 목표:</b> '+esc(r.data.prevGoal)+'</div>'}
+    if(r.data.isFirstSession){$('ckPF').value='첫 상담 (직전 목표 없음)';$('prevGoalArea').innerHTML='<div style="padding:10px;background:var(--pri2);border-radius:8px;font-size:.82rem;color:var(--pri);text-align:center">🎉 첫 상담 — 새로운 목표를 설정해주세요</div>'}
+    callGeminiBriefing(r.data.prompt,r.data.schema,btn)
+  })
+}
+async function callGeminiBriefing(prompt,schema,btn){
+  var url='https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key='+SESSION_API_KEY;
+  var payload={contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',responseSchema:schema,thinkingConfig:{thinkingLevel:'LOW'}}};
+  try{
+    var resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    var json=await resp.json();
+    if(resp.ok&&json.candidates&&json.candidates[0].content){
+      var parts=json.candidates[0].content.parts,txt='';
+      for(var i=0;i<parts.length;i++){if(parts[i].thought)continue;if(parts[i].text)txt+=parts[i].text}
+      BRIEFING_DATA=JSON.parse(txt);renderBriefing(BRIEFING_DATA);btn.disabled=false;btn.textContent='✅ 브리핑 완료 — 다시 생성'
+    }else throw new Error(json.error?json.error.message:'API 오류')
+  }catch(e){btn.disabled=false;btn.textContent='🤖 AI 브리핑 생성 (재시도)';toast('AI 브리핑 실패: '+e.message,'te')}
+}
+function renderBriefing(b){
+  var sp=b.studentProfile||{};
+  $('bp_name').textContent=(b.studentName||$('ssStudent').value)+' 학생 프로필';
+  $('bp_disp').textContent=sp.dispositionSummary||'-';
+  $('bp_moti').textContent=sp.coreMotivation||'-';
+  $('bp_chal').textContent=sp.coreChallenge||'-';
+  var fm=b.fourteenDayMetrics||{},mg=$('metricsGrid');mg.innerHTML='';
+  (fm.quantitativeMetrics||[]).forEach(function(m){
+    var tc=m.trend==='up'?'var(--gn)':m.trend==='down'?'var(--rd)':'var(--tx)';
+    var ti=m.trend==='up'?'▲':m.trend==='down'?'▼':'—';
+    var df=m.currentValue-m.previousValue;var ds=df>0?'+'+df.toFixed(1):df.toFixed(1);
+    mg.innerHTML+='<div style="text-align:center;padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:1.2rem;font-weight:800;color:'+tc+'">'+m.currentValue.toFixed(1)+'</div><div style="font-size:.68rem;color:var(--tx3)">'+m.metricName+'</div><div style="font-size:.68rem;font-weight:700;color:'+tc+'">'+ti+' '+ds+'</div></div>'
+  });
+  var qs=$('qualSummaries');qs.innerHTML='';
+  (fm.qualitativeSummaries||[]).forEach(function(q){qs.innerHTML+='<div style="padding:8px 10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--pri);margin-bottom:6px;font-size:.8rem"><b style="color:var(--pri);font-size:.72rem">'+q.fieldName+'</b><br>'+(q.summary||q.description||'-')+'</div>'});
+  var fu=b.previousCounselingFollowUp||{};
+  if(!b.isFirstSession&&fu.fulfillmentSummary){$('followUpArea').innerHTML='<div style="padding:8px 10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--or);margin-bottom:6px;font-size:.8rem"><b style="color:var(--or);font-size:.72rem">이행 평가</b><br>'+esc(fu.fulfillmentSummary)+'</div>'}
+  var ag=b.aiCounselingAgenda||{};$('agendaTheme').textContent='💬 '+(ag.mainTheme||'상담 진행');
+  var dp=$('discussionPts');dp.innerHTML='';
+  (ag.discussionPoints||[]).forEach(function(d){
+    var tc=d.type==='Praise'?'var(--gn)':d.type==='Problem'?'var(--rd)':'var(--or)';
+    var tl=d.type==='Praise'?'👍 칭찬':d.type==='Problem'?'⚠️ 문제점':'💡 제안';
+    dp.innerHTML+='<div style="padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:6px"><div style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;background:'+tc+'15;color:'+tc+'">'+tl+'</div><div style="font-size:.82rem;font-weight:700;margin-top:4px">'+esc(d.topic)+'</div><div style="font-size:.76rem;color:var(--tx2);font-style:italic;margin-top:2px">"'+(d.script||d.evidence||'')+'"</div></div>'
+  });
+  $('briefResult').style.display='block';$('checklistPanel').style.display='block'
+}
+function completeSession(){
+  var nm=$('ssStudent').value,csl=$('ssCounselor').value;
+  var sa=$('ckSA').value,ob=$('ckOB').value,pf=$('ckPF').value,goal=$('ssGoal').value.trim();
+  if(!nm){toast('학생을 선택하세요','te');return}
+  if(!csl){toast('상담자를 선택하세요','te');return}
+  if(!sa){toast('자기진단(SA)을 선택하세요','te');return}
+  if(!ob){toast('관찰(OB)을 선택하세요','te');return}
+  if(!pf){toast('이행평가(PF)를 선택하세요','te');return}
+  if(!goal){toast('학습 목표를 입력하세요','te');return}
+  var btn=$('btnComplete');btn.disabled=true;btn.textContent='저장 중...';
+  var bl=$('ckBL').value==='기타'?$('ckBL_custom').value:$('ckBL').value;
+  var data={studentName:nm,counselorName:csl,sa:sa,ob:ob,bl:bl,pf:pf,goal:goal,briefingJSON:BRIEFING_DATA?JSON.stringify(BRIEFING_DATA):''};
+  apiPost('cp_saveSession',{data:data},function(r){
+    btn.disabled=false;btn.textContent='✅ 상담 완료 — AI 분석 요청';
+    if(r.success){toast('✅ '+nm+' 상담이 대기열에 저장되었습니다.\n사이드바에서 "'+csl+'" 설정 후 자동 처리됩니다.','to');resetSessionForm();loadQ()}
+    else toast(r.error||'저장 실패','te')
+  })
+}
+function resetSessionForm(){$('ssStudent').value='';$('ssCounselor').value='';$('briefResult').style.display='none';$('checklistPanel').style.display='none';$('ckSA').value='';$('ckOB').value='';$('ckBL').value='없음';$('ckBL_custom').style.display='none';$('ckPF').value='';$('ssGoal').value='';$('prevGoalArea').innerHTML='';$('followUpArea').innerHTML='';BRIEFING_DATA=null;SESSION_API_KEY=''}
+function toggleBLInput(){var s=$('ckBL'),i=$('ckBL_custom');if(s.value==='기타'){i.style.display='block';i.focus()}else{i.style.display='none';i.value=''}}
 
 // ─── 3. 2주 리포트 ───
 function loadBiweekly(){var nm=$('bwFilter').value;apiGet('cp_biweeklyList',{student:nm},function(r){if(r.success){var reps=r.reports||[];if(!reps.length){$('bwList').innerHTML='<div class="emp"><p>리포트가 없습니다.</p></div>';return}$('bwList').innerHTML=reps.map(rp=>'<div class="rpt-item"><div class="rpt-info"><div class="rpt-name">'+esc(rp.student)+' — '+esc(rp.consultDate||'')+'</div><div class="rpt-date">상담자: '+esc(rp.counselor||'')+' | ID: '+esc(rp.consultId||'')+'</div></div><div class="rpt-acts">'+(rp.shortCode?'<button class="btn bo bs" onclick="copyUrl(\''+esc(rp.shortCode)+'\')">📋 복사</button>':'')+(rp.reportUrl?'<a href="'+esc(rp.reportUrl)+'" target="_blank" class="btn bp bs">열기 ↗</a>':'<span style="color:var(--tx3);font-size:.76rem">URL 없음</span>')+'</div></div>').join('')}else $('bwList').innerHTML='<div class="emp"><p>'+esc(r.error)+'</p></div>'})}
