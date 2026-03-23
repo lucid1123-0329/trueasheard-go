@@ -327,7 +327,26 @@ function populateSelects(){var opts=S.names.map(n=>'<option value="'+esc(n)+'">'
 // Dashboard
 function loadDash(){sLd(true);apiGet('cp_dashboard',{},function(r){sLd(false);if(r.success){S.students=r.students||[];calcSt();render()}else toast(r.error||'로드 실패','te')})}
 function gV(s,kw){var keys=Object.keys(s);var k=keys.find(function(k){return k.indexOf(kw)>-1});return k?s[k]:''}
-function gSt(s){var stVal=String(gV(s,'상담 상태')||gV(s,'상태')||'').trim();var dm=stVal.match(/D-?(\-?\d+)/i);if(dm){var d=parseInt(dm[1]);if(d<=0)return{st:'overdue',lb:'D'+d+' 지연',d:d,dd:stVal};if(d<=3)return{st:'soon',lb:'D-'+d,d:d,dd:stVal};return{st:'normal',lb:'D-'+d,d:d,dd:stVal}}var ld=String(gV(s,'최종 상담일')||gV(s,'최종상담일')||gV(s,'최근상담일')||'').trim();if(!ld||ld==='-')return{st:'new',lb:'신규',d:null,dd:''};var dt=new Date(ld.replace(/\.\s*/g,'-'));if(isNaN(dt.getTime()))return{st:'new',lb:'신규',d:null,dd:''};var diff=Math.floor((new Date()-dt)/864e5);if(diff>16)return{st:'overdue',lb:diff+'일 경과',d:-diff,dd:''};if(diff>=12)return{st:'soon',lb:diff+'일 경과',d:14-diff,dd:''};return{st:'normal',lb:'정상',d:14-diff,dd:''}}
+function gSt(s){
+  // 상담 횟수가 0이면 바로 신규
+  var cnt=String(gV(s,'상담 횟수')||gV(s,'상담횟수')||'0').trim();
+  if(cnt==='0'||cnt==='')return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
+  // D-N 상태값
+  var stVal=String(gV(s,'상담 상태')||gV(s,'상태')||'').trim();
+  var dm=stVal.match(/D-?(\-?\d+)/i);
+  if(dm){var d=parseInt(dm[1]);if(d<=0)return{st:'overdue',lb:'D'+d+' 지연',d:d,dd:stVal};if(d<=3)return{st:'soon',lb:'D-'+d,d:d,dd:stVal};return{st:'normal',lb:'D-'+d,d:d,dd:stVal}}
+  // 날짜 기반 폴백
+  var ld=String(gV(s,'최종 상담일')||gV(s,'최종상담일')||gV(s,'최근상담일')||'').trim();
+  if(!ld||ld==='-'||ld==='0')return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
+  var dt=new Date(ld.replace(/\.\s*/g,'-'));
+  if(isNaN(dt.getTime()))return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
+  var diff=Math.floor((new Date()-dt)/864e5);
+  // 비정상적으로 큰 값(365일 초과)은 데이터 오류로 판단
+  if(diff>365)return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
+  if(diff>16)return{st:'overdue',lb:diff+'일 경과',d:-diff,dd:''};
+  if(diff>=12)return{st:'soon',lb:diff+'일 경과',d:14-diff,dd:''};
+  return{st:'normal',lb:'정상',d:14-diff,dd:''}
+}
 function calcSt(){var t=0,ok=0,sn=0,ov=0;S.students.forEach(s=>{t++;var x=gSt(s).st;if(x==='normal')ok++;else if(x==='soon')sn++;else if(x==='overdue')ov++});$('st0').textContent=t;$('st1').textContent=ok;$('st2').textContent=sn;$('st3').textContent=ov}
 function render(){
   var gd=$('gd'),em=$('em'),q=$('sI').value.trim().toLowerCase();
