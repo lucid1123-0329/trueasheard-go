@@ -115,11 +115,10 @@ button{cursor:pointer;border:none;background:none}
 .dtbl .st-bar{width:3px;height:100%;min-height:28px;border-radius:1px}
 .dtbl .nm-cell{font-weight:600;color:var(--ink);cursor:pointer}.dtbl .nm-cell:hover{color:var(--accent)}
 .dtbl .sub-text{font-size:10px;color:var(--t4)}
-/* Tooltip */
-.tip-wrap{position:relative;cursor:default}
-.tip-wrap .tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;line-height:1.5;padding:8px 12px;border-radius:6px;white-space:nowrap;z-index:200;max-width:320px;white-space:normal}
-.tip-wrap .tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--ink)}
-.tip-wrap:hover .tip{display:block}
+/* Tooltip — JS controlled position */
+.tip-trigger{border-bottom:1px dashed var(--t4);cursor:default}
+.tip-box{display:none;position:fixed;background:var(--ink);color:#fff;font-size:11px;line-height:1.6;padding:10px 14px;border-radius:6px;z-index:600;width:300px;pointer-events:none}
+.tip-box b{font-weight:600;color:#fff}
 @media(max-width:768px){.dtbl th:nth-child(n+6),.dtbl td:nth-child(n+6){display:none}.dtbl .dtbl-act{display:table-cell}}
 /* Page sections */
 .pg{display:none}.pg.on{display:block}
@@ -303,6 +302,8 @@ button{cursor:pointer;border:none;background:none}
 </div>
 
 </div></div></div>
+<!-- Tip -->
+<div class="tip-box" id="tipBox"></div>
 <!-- Modal -->
 <div class="mbg" id="modal"><div class="mdl"><h3 id="mT">학생 정보</h3><div id="mB"></div><div class="mac"><button class="btn bo" onclick="cMod()">닫기</button><button class="btn bp" id="mA">상담 시작</button></div></div></div>
 <div class="tc" id="tC"></div>
@@ -392,14 +393,14 @@ function render(){
     // 학부모 열: 날짜 + 회차, hover시 요청/요약 툴팁
     var pDisp=pDate?(esc(pDate)+(pCount?' ('+esc(String(pCount))+'회)':'')):'—';
     var hasTip=pRequest||pSummary;
-    var tipHtml='';
+    var tipData='';
     if(hasTip){
-      tipHtml='<div class="tip">';
-      if(pSummary)tipHtml+='<div style="margin-bottom:4px"><b>상담 요약</b><br>'+esc(String(pSummary).substring(0,120))+'</div>';
-      if(pRequest)tipHtml+='<div><b>학부모 요청</b><br>'+esc(String(pRequest).substring(0,120))+'</div>';
-      tipHtml+='</div>';
+      var parts=[];
+      if(pSummary)parts.push('상담 요약: '+String(pSummary).substring(0,150));
+      if(pRequest)parts.push('학부모 요청: '+String(pRequest).substring(0,150));
+      tipData=parts.join(' | ');
     }
-    var pCell=hasTip?'<span class="tip-wrap" style="border-bottom:1px dashed var(--t4)">'+pDisp+tipHtml+'</span>':pDisp;
+    var pCell=hasTip?'<span class="tip-trigger" onmouseenter="showTip(event,this)" onmouseleave="hideTip()" data-tip="'+esc(tipData)+'">'+pDisp+'</span>':pDisp;
     return'<tr>'+
       '<td class="dtbl-st"><div class="st-bar" style="background:'+barColor+'"></div></td>'+
       '<td style="text-align:center;font-size:10px;color:var(--t4)">'+(idx+1)+'</td>'+
@@ -474,6 +475,10 @@ function cSB(){$('sb').classList.remove('open');$('mov').classList.remove('open'
 // Modal
 function oMod(nm){var s=S.students.find(x=>String(gV(x,'학생명')||x[Object.keys(x)[0]])===nm);if(!s)return;$('mT').textContent=nm;var keys=Object.keys(s).filter(k=>k.charAt(0)!=='_');var h='';keys.forEach(k=>{var v=s[k];if(v===''||v==null)return;h+='<div class="ir" style="padding:5px 0;border-bottom:1px solid var(--border)"><span class="l">'+esc(k)+'</span><span class="v">'+esc(String(v))+'</span></div>'});$('mB').innerHTML=h;$('mA').onclick=()=>{cMod();startSessionFor(nm)};$('modal').classList.add('on')}
 function cMod(){$('modal').classList.remove('on')}
+
+// Tooltip
+function showTip(e,el){var box=$('tipBox');var txt=el.getAttribute('data-tip');if(!txt)return;box.textContent=txt;box.style.display='block';var r=el.getBoundingClientRect();var bw=300;var left=r.left+r.width/2-bw/2;if(left<8)left=8;if(left+bw>window.innerWidth-8)left=window.innerWidth-bw-8;box.style.left=left+'px';box.style.top=(r.top-box.offsetHeight-6)+'px';if(r.top-box.offsetHeight-6<4)box.style.top=(r.bottom+6)+'px'}
+function hideTip(){$('tipBox').style.display='none'}
 
 // Util
 function $(id){return document.getElementById(id)}
