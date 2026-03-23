@@ -2,6 +2,18 @@
   "version": 2,
   "routes": [
     {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
+      "src": "/favicon-32.png",
+      "dest": "/public/favicon-32.png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "dest": "/public/apple-touch-icon.png"
+    },
+    {
       "src": "/og-mbhj-v2.png",
       "dest": "/public/og-mbhj-v2.png"
     },
