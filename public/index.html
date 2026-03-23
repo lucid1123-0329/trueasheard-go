@@ -301,8 +301,9 @@ input,button,select,textarea{font-family:inherit}button{cursor:pointer;border:no
     <div class="sc"><div class="sl">❌ 에러</div><div class="sv" id="qqE">0</div></div>
   </div>
   <div class="tb">
-    <button class="btn bor bs" onclick="resetQueue()">🔄 멈춤 해제 (처리중→대기중)</button>
-    <button class="btn br bs" onclick="forceProcess()">⚡ 강제 일괄 처리</button>
+    <button class="btn bp bs" onclick="manualForceProcess()">⚡ 수동 일괄 처리</button>
+    <button class="btn bor bs" onclick="resetQueue()">🔄 멈춤 해제</button>
+    <button class="btn br bs" onclick="clearQueue()">🗑️ 전체 삭제</button>
     <button class="btn bo bs" onclick="loadQueueFull()">↻ 새로고침</button>
   </div>
   <div class="panel">
@@ -509,11 +510,17 @@ function completeSession(){
     if(r.success){
       toast('✅ '+nm+' 상담 저장 완료! AI 분석이 자동 시작됩니다. 다음 학생을 바로 진행하세요.','to');
       resetSessionForm();
-      // ★ 자동 대기열 처리 트리거 (상담자 상관없이 순서대로)
-      setTimeout(function(){apiPost('cp_forceProcess',{},function(pr){
-        if(pr.success) console.log('Auto queue process triggered');
-        loadQ();
-      })},2000);
+      // ★ 자동 대기열 처리 (중복 방지)
+      setTimeout(function(){
+        if(!isAutoProcessing){
+          isAutoProcessing=true;
+          apiPost('cp_forceProcess',{},function(pr){
+            isAutoProcessing=false;
+            if(pr.success&&pr.processed>0) toast('🔄 AI 분석 완료: '+pr.message,'to');
+            loadQ();
+          })
+        }
+      },3000);
     }
     else toast(r.error||'저장 실패','te')
   })
@@ -587,14 +594,33 @@ function saveParentConsult(){
 
 // ─── 6. 대기열 (자동 폴링 + 자동 처리) ───
 var queuePollTimer=null;
+var isAutoProcessing=false;
 function startQueuePolling(){if(queuePollTimer)clearInterval(queuePollTimer);queuePollTimer=setInterval(autoCheckQueue,30000)}
-function autoCheckQueue(){apiGet('cp_queueStatus',{},function(r){if(!r.success)return;var st=r.stats;$('qW').textContent=st.waiting;$('qP').textContent=st.processing;var b=$('qB'),pn=st.waiting+st.processing;if(pn>0){b.textContent=pn;b.style.display='inline'}else{b.style.display='none'}
-  // ★ 대기중 항목이 있고 처리중이 없으면 자동 처리 시작
-  if(st.waiting>0&&st.processing===0){console.log('Auto-processing '+st.waiting+' queue items');apiPost('cp_forceProcess',{},function(pr){if(pr.success)toast('🔄 대기열 '+st.waiting+'건 자동 처리 시작','to')})}})}
+function autoCheckQueue(){
+  if(isAutoProcessing)return; // 중복 실행 방지
+  apiGet('cp_queueStatus',{},function(r){
+    if(!r.success)return;var st=r.stats;
+    $('qW').textContent=st.waiting;$('qP').textContent=st.processing;
+    var b=$('qB'),pn=st.waiting+st.processing;
+    if(pn>0){b.textContent=pn;b.style.display='inline'}else{b.style.display='none'}
+    // 대기중 항목이 있고 처리중이 없으면 자동 처리
+    if(st.waiting>0&&st.processing===0){
+      isAutoProcessing=true;
+      console.log('Auto-processing '+st.waiting+' queue items');
+      apiPost('cp_forceProcess',{},function(pr){
+        isAutoProcessing=false;
+        if(pr.success&&pr.processed>0) toast('🔄 자동처리 완료: '+pr.message,'to');
+        loadQ();
+      })
+    }
+  })
+}
 function loadQ(){apiGet('cp_queueStatus',{},function(r){if(!r.success)return;var st=r.stats;$('qW').textContent=st.waiting;$('qP').textContent=st.processing;var b=$('qB'),pn=st.waiting+st.processing;if(pn>0){b.textContent=pn;b.style.display='inline'}else b.style.display='none'})}
-function loadQueueFull(){sLd(true);apiGet('cp_queueStatus',{},function(r){sLd(false);if(!r.success){toast(r.error,'te');return}var st=r.stats;$('qqW').textContent=st.waiting;$('qqP').textContent=st.processing;$('qqD').textContent=st.done;$('qqE').textContent=st.error;$('qW').textContent=st.waiting;$('qP').textContent=st.processing;var items=r.items||[];if(!items.length){$('qList').innerHTML='<div class="emp"><p>대기열이 비어있습니다.</p></div>';return}$('qList').innerHTML=items.map(it=>{var sc=it.status==='대기중'?'q-waiting':it.status==='처리중'?'q-processing':it.status==='완료'?'q-done':'q-error';return'<div class="q-item"><div class="q-info"><div class="q-name">'+esc(it.student)+'</div><div class="q-meta">상담자: '+esc(it.counselor)+' | ID: '+esc(it.id)+'</div></div><span class="q-badge '+sc+'">'+esc(it.status)+'</span></div>'}).join('')})}
-function resetQueue(){if(!confirm('처리중 → 대기중으로 변경합니다. 계속?'))return;sLd(true);apiPost('cp_resetQueue',{},function(r){sLd(false);if(r.success){toast('✅ 멈춤 해제 완료','to');loadQueueFull();loadQ()}else toast(r.error,'te')})}
-function forceProcess(){if(!confirm('대기 중인 항목을 강제 일괄 처리합니다. 계속?'))return;sLd(true);apiPost('cp_forceProcess',{},function(r){sLd(false);if(r.success){toast('✅ 강제 처리 시작됨','to');setTimeout(loadQueueFull,3000);loadQ()}else toast(r.error,'te')})}
+function loadQueueFull(){sLd(true);apiGet('cp_queueStatus',{},function(r){sLd(false);if(!r.success){toast(r.error,'te');return}var st=r.stats;$('qqW').textContent=st.waiting;$('qqP').textContent=st.processing;$('qqD').textContent=st.done;$('qqE').textContent=st.error;$('qW').textContent=st.waiting;$('qP').textContent=st.processing;var items=r.items||[];if(!items.length){$('qList').innerHTML='<div class="emp"><p>대기열이 비어있습니다.</p></div>';return}$('qList').innerHTML=items.map(it=>{var sc=it.status==='대기중'?'q-waiting':it.status==='처리중'?'q-processing':it.status.indexOf('에러')>=0?'q-error':'q-done';return'<div class="q-item"><div class="q-info"><div class="q-name">'+esc(it.student)+'</div><div class="q-meta">상담자: '+esc(it.counselor)+' | ID: '+esc(it.id)+'</div></div><span class="q-badge '+sc+'">'+esc(it.status)+'</span><button class="btn br bs" style="margin-left:8px;padding:3px 8px;font-size:.7rem" onclick="deleteQueueItem(\''+esc(it.id)+'\',\''+esc(it.student)+'\')">🗑️</button></div>'}).join('')})}
+function resetQueue(){if(!confirm('처리중 → 대기중으로 변경합니다. 계속?'))return;sLd(true);apiPost('cp_resetQueue',{},function(r){sLd(false);if(r.success){toast('✅ '+r.message,'to');loadQueueFull();loadQ()}else toast(r.error,'te')})}
+function manualForceProcess(){if(!confirm('대기 중인 항목을 서버에서 직접 처리합니다.\n(항목당 약 30초 소요)\n계속?'))return;sLd(true);toast('⚡ 대기열 처리 시작... 완료될 때까지 기다려주세요.');apiPost('cp_forceProcess',{},function(r){sLd(false);if(r.success){toast('✅ '+r.message,'to');loadQueueFull();loadQ()}else toast(r.error||'처리 실패','te')})}
+function deleteQueueItem(taskId,name){if(!confirm(name+' 항목을 대기열에서 삭제합니다. 계속?'))return;apiPost('cp_deleteQueueItem',{taskId:taskId},function(r){if(r.success){toast('🗑️ 삭제 완료','to');loadQueueFull();loadQ()}else toast(r.error,'te')})}
+function clearQueue(){if(!confirm('⚠️ 대기열의 모든 항목을 삭제합니다.\n(처리 완료/에러 포함 전부)\n정말 삭제하시겠습니까?'))return;sLd(true);apiPost('cp_clearQueue',{},function(r){sLd(false);if(r.success){toast('🗑️ 전체 삭제 완료','to');loadQueueFull();loadQ()}else toast(r.error,'te')})}
 
 // ─── URL 복사 ───
 function copyUrl(code){var url=code;if(!code.startsWith('http'))url='https://go.trueasheard.com/'+code;navigator.clipboard.writeText(url).then(()=>toast('📋 URL 복사 완료','to')).catch(()=>{prompt('URL을 복사하세요:',url)})}
