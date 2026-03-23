@@ -243,9 +243,9 @@ input,button,select,textarea{font-family:inherit}button{cursor:pointer;border:no
     <div class="fld"><label>상담 방법</label>
       <select id="pcMethod"><option value="전화">전화</option><option value="대면">대면</option><option value="온라인">온라인</option></select></div>
     <div class="fld"><label>상담 요약</label><textarea id="pcSummary" placeholder="상담 내용을 요약해주세요..."></textarea></div>
-    <div class="fld"><label>학부모 요청사항</label><textarea id="pcRequest" placeholder="학부모 주요 요청..."></textarea></div>
+    <div class="fld"><label>학부모 주요 요청</label><textarea id="pcRequest" placeholder="학부모님의 주요 요청 사항..."></textarea></div>
     <div class="fld"><label>조치 사항</label><textarea id="pcAction" placeholder="학원 측 조치 사항..."></textarea></div>
-    <div class="fld"><label>다음 단계</label><input type="text" id="pcNext" placeholder="다음 상담 예정 등..."></div>
+    <div class="fld"><label>비고</label><input type="text" id="pcNote" placeholder="추가과목 권유, 일반 면담 등..."></div>
     <button class="btn bg" onclick="saveParentConsult()" id="btnSavePC">💾 상담 기록 저장</button>
   </div>
   <div class="panel" id="pcHistPanel" style="display:none">
@@ -450,8 +450,52 @@ function loadParentReports(){var nm=$('prFilter').value;apiGet('cp_reportList',{
 function generateNewReport(){var nm=$('prFilter').value;if(!nm){toast('학생을 먼저 선택하세요','te');return}if(!confirm(nm+' 학생의 학부모 리포트를 새로 생성합니다.\n(약 15~30초 소요) 계속하시겠습니까?'))return;sLd(true);apiPost('cp_generateReport',{student:nm},function(r){sLd(false);if(r.success){toast('✅ '+nm+' 리포트 생성 완료','to');loadParentReports()}else toast(r.error||'생성 실패','te')})}
 
 // ─── 5. 학부모 상담 기록 ───
-function loadParentHistory(){var nm=$('pcStudent').value;if(!nm){$('pcHistPanel').style.display='none';return}apiGet('cp_parentConsultHistory',{student:nm},function(r){if(r.success&&r.records&&r.records.length>0){$('pcHistPanel').style.display='block';$('pcHistList').innerHTML=r.records.map(rc=>'<div style="padding:10px 0;border-bottom:1px solid var(--bd2)"><div style="font-weight:600;font-size:.85rem">'+esc(rc[Object.keys(rc)[1]]||'')+' · '+esc(rc[Object.keys(rc)[2]]||'')+'</div><div style="font-size:.8rem;color:var(--tx2);margin-top:4px">'+esc(rc[Object.keys(rc)[3]]||'')+'</div></div>').join('')}else $('pcHistPanel').style.display='none'})}
-function saveParentConsult(){var nm=$('pcStudent').value;if(!nm){toast('학생을 선택하세요','te');return}var btn=$('btnSavePC');btn.disabled=true;btn.textContent='저장 중...';apiPost('cp_saveParentConsult',{student:nm,method:$('pcMethod').value,summary:$('pcSummary').value,request:$('pcRequest').value,action_detail:$('pcAction').value,nextStep:$('pcNext').value,recorder:S.user},function(r){btn.disabled=false;btn.textContent='💾 상담 기록 저장';if(r.success){toast('✅ 학부모 상담 기록 저장 완료','to');$('pcSummary').value='';$('pcRequest').value='';$('pcAction').value='';$('pcNext').value='';loadParentHistory()}else toast(r.error||'저장 실패','te')})}
+function loadParentHistory(){
+  var nm=$('pcStudent').value;
+  if(!nm){$('pcHistPanel').style.display='none';return}
+  apiGet('cp_parentConsultHistory',{student:nm},function(r){
+    if(r.success&&r.records&&r.records.length>0){
+      $('pcHistPanel').style.display='block';
+      // 실제 컬럼: 학생명, 상담일, 상담자, 상담 방법, 상담 요약, 학부모 주요 요청, 조치 사항, 비고
+      $('pcHistList').innerHTML=r.records.map(function(rc){
+        var date=rc['상담일']||rc[Object.keys(rc)[1]]||'';
+        var csl=rc['상담자']||rc[Object.keys(rc)[2]]||'';
+        var method=rc['상담 방법']||rc[Object.keys(rc)[3]]||'';
+        var summary=rc['상담 요약']||rc[Object.keys(rc)[4]]||'';
+        var request=rc['학부모 주요 요청']||rc[Object.keys(rc)[5]]||'';
+        var action=rc['조치 사항']||rc[Object.keys(rc)[6]]||'';
+        var note=rc['비고']||rc[Object.keys(rc)[7]]||'';
+        return'<div style="padding:12px 0;border-bottom:1px solid var(--bd2)">'+
+          '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'+
+            '<span style="font-weight:600;font-size:.85rem">'+esc(date)+' · '+esc(method)+'</span>'+
+            '<span style="font-size:.76rem;color:var(--tx3)">상담자: '+esc(csl)+'</span></div>'+
+          '<div style="font-size:.82rem;color:var(--tx2);margin-bottom:4px">'+esc(summary)+'</div>'+
+          (request?'<div style="font-size:.78rem;color:var(--or)">📌 요청: '+esc(request)+'</div>':'')+
+          (action?'<div style="font-size:.78rem;color:var(--gn)">✅ 조치: '+esc(action)+'</div>':'')+
+          (note?'<div style="font-size:.76rem;color:var(--tx3);margin-top:2px">비고: '+esc(note)+'</div>':'')+'</div>'
+      }).join('')
+    }else $('pcHistPanel').style.display='none'
+  })
+}
+function saveParentConsult(){
+  var nm=$('pcStudent').value;
+  if(!nm){toast('학생을 선택하세요','te');return}
+  var btn=$('btnSavePC');btn.disabled=true;btn.textContent='저장 중...';
+  // 실제 DB 컬럼: 학생명, 상담일(서버), 상담자, 상담방법, 상담요약, 학부모주요요청, 조치사항, 비고
+  apiPost('cp_saveParentConsult',{
+    student:nm,
+    counselor:S.user,
+    method:$('pcMethod').value,
+    summary:$('pcSummary').value,
+    request:$('pcRequest').value,
+    action:$('pcAction').value,
+    note:$('pcNote').value
+  },function(r){
+    btn.disabled=false;btn.textContent='💾 상담 기록 저장';
+    if(r.success){toast('✅ 학부모 상담 기록 저장 완료','to');$('pcSummary').value='';$('pcRequest').value='';$('pcAction').value='';$('pcNote').value='';loadParentHistory()}
+    else toast(r.error||'저장 실패','te')
+  })
+}
 
 // ─── 6. 대기열 ───
 function loadQ(){apiGet('cp_queueStatus',{},function(r){if(!r.success)return;var st=r.stats;$('qW').textContent=st.waiting;$('qP').textContent=st.processing;var b=$('qB'),pn=st.waiting+st.processing;if(pn>0){b.textContent=pn;b.style.display='inline'}else b.style.display='none'})}
