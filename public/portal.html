@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>명불허전학원 — 상담 관리 포털</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f2f5;--sf:#fff;--bd:#e0e3e8;--bd2:#eef0f4;
+  --tx:#1a1d23;--tx2:#5f6775;--tx3:#9ba2ae;
+  --pri:#2563eb;--pri2:#eff4ff;--pri3:#1d4ed8;
+  --gn:#059669;--gn2:#ecfdf5;--or:#d97706;--or2:#fffbeb;
+  --rd:#dc2626;--rd2:#fef2f2;--pu:#7c3aed;--pu2:#f5f3ff;
+  --r:10px;--r2:14px;--sh:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.03);
+  --font:'Noto Sans KR',-apple-system,sans-serif;
+  --sbw:220px;--hh:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:var(--font);color:var(--tx);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+input,button,select,textarea{font-family:inherit}
+button{cursor:pointer;border:none;background:none}
+
+/* ─── 로그인 ─── */
+#loginWrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#0f172a,#1e293b)}
+#loginWrap.hide{display:none}
+.lc{background:#fff;border-radius:18px;padding:44px 36px;width:100%;max-width:380px;box-shadow:0 16px 50px rgba(0,0,0,.22)}
+.lc .logo{text-align:center;margin-bottom:28px}
+.lc .logo-i{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--pri),#6366f1);font-size:26px;color:#fff;margin-bottom:12px}
+.lc h1{font-size:1.35rem;font-weight:700}
+.lc .sub{color:var(--tx2);font-size:.85rem;margin-top:3px}
+.lerr{background:var(--rd2);color:var(--rd);padding:9px 13px;border-radius:8px;font-size:.82rem;margin-bottom:14px;display:none}
+.fld{margin-bottom:14px}
+.fld label{display:block;font-size:.8rem;font-weight:600;color:var(--tx2);margin-bottom:5px}
+.fld input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.92rem;background:var(--bg);transition:border-color .2s}
+.fld input:focus{outline:none;border-color:var(--pri);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.lbtn{width:100%;padding:12px;margin-top:6px;background:linear-gradient(135deg,var(--pri),#4f46e5);color:#fff;font-size:.92rem;font-weight:600;border-radius:var(--r);transition:all .2s}
+.lbtn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,99,235,.3)}
+.lbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* ─── 앱 ─── */
+#app{display:none;min-height:100vh}
+#app.on{display:flex}
+
+.sb{width:var(--sbw);background:#0f172a;color:#e2e8f0;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s}
+.sb-hd{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-hd h2{font-size:1rem;font-weight:700;color:#fff}
+.sb-hd span{font-size:.7rem;color:#94a3b8}
+.sb-nv{flex:1;padding:10px 8px;overflow-y:auto}
+.sb-lb{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#64748b;padding:10px 10px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;font-size:.84rem;color:#cbd5e1;transition:all .15s;margin-bottom:1px}
+.ni:hover{background:rgba(255,255,255,.06);color:#fff}
+.ni.on{background:rgba(37,99,235,.2);color:#93bbfd;font-weight:500}
+.ni .ic{width:20px;text-align:center;font-size:1rem}
+.ni .bdg{margin-left:auto;background:var(--rd);color:#fff;font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:8px}
+.sb-ft{padding:14px 16px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-ft .ur{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sb-ft .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff}
+.sb-ft .un{font-size:.82rem;color:#e2e8f0}
+.sb-ft .uro{font-size:.68rem;color:#94a3b8}
+.lo-btn{font-size:.78rem;color:#94a3b8;padding:4px 0;transition:color .15s}
+.lo-btn:hover{color:#f87171}
+
+.mn{flex:1;margin-left:var(--sbw);min-height:100vh}
+.mh{height:var(--hh);background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 22px;position:sticky;top:0;z-index:50}
+.mh .tt{font-size:1.05rem;font-weight:600}
+.mh .ac{margin-left:auto;display:flex;align-items:center;gap:8px}
+.mm{display:none;font-size:1.3rem;margin-right:10px;color:var(--tx)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;font-size:.82rem;font-weight:500;transition:all .15s}
+.bp{background:var(--pri);color:#fff}.bp:hover{background:var(--pri3)}
+.bo{border:1.5px solid var(--bd);color:var(--tx2);background:var(--sf)}.bo:hover{border-color:var(--pri);color:var(--pri)}
+.bs{padding:5px 10px;font-size:.78rem}
+.mc{padding:20px 22px}
+
+/* 통계 */
+.sts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.sc{background:var(--sf);border-radius:var(--r2);padding:16px;border:1px solid var(--bd2)}
+.sc .sl{font-size:.72rem;color:var(--tx3);font-weight:500;margin-bottom:6px}
+.sc .sv{font-size:1.6rem;font-weight:700;line-height:1.1}
+.sc .ss{font-size:.72rem;color:var(--tx2);margin-top:4px}
+
+/* 알림 */
+.ap{background:var(--sf);border-radius:var(--r2);border:1px solid var(--bd2);padding:16px;margin-bottom:20px}
+.ap h3{font-size:.92rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.si{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd2)}
+.si:last-child{border-bottom:none}
+.sd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.si .nm{font-weight:500;font-size:.84rem}
+.si .dt{font-size:.76rem;color:var(--tx3);margin-left:auto}
+
+/* 필터 */
+.tb{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.sbox{display:flex;align-items:center;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);padding:0 10px;flex:1;max-width:280px}
+.sbox:focus-within{border-color:var(--pri)}
+.sbox input{border:none;background:none;padding:8px 0 8px 6px;font-size:.84rem;flex:1;outline:none}
+.fg{display:flex;gap:3px;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);padding:2px}
+.fb{padding:5px 12px;border-radius:6px;font-size:.78rem;font-weight:500;color:var(--tx2);transition:all .15s}
+.fb.on{background:var(--pri);color:#fff}
+.fb:hover:not(.on){background:var(--bg)}
+
+/* 카드 그리드 */
+.gd{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.cd{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r2);padding:16px;transition:all .15s;cursor:pointer}
+.cd:hover{border-color:var(--pri);box-shadow:var(--sh);transform:translateY(-1px)}
+.cd .ch{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cd .cav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;color:#fff;flex-shrink:0}
+.cd .cn{font-size:.95rem;font-weight:600}
+.cd .cm{font-size:.72rem;color:var(--tx3)}
+.bds{margin-left:auto;padding:3px 9px;border-radius:16px;font-size:.68rem;font-weight:600}
+.sn{background:var(--gn2);color:var(--gn)}.ss2{background:var(--or2);color:var(--or)}.so{background:var(--rd2);color:var(--rd)}.snw{background:var(--pu2);color:var(--pu)}
+.cd .cb{font-size:.8rem}
+.cd .ir{display:flex;justify-content:space-between;padding:4px 0;color:var(--tx2)}
+.cd .ir .l{color:var(--tx3)}.cd .ir .v{font-weight:500;color:var(--tx)}
+.cd .ca{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd2)}
+.cd .ca .btn{flex:1;justify-content:center}
+
+.qm{display:flex;gap:12px}.qs{display:flex;align-items:center;gap:4px;font-size:.78rem}
+.qd{width:6px;height:6px;border-radius:50%}
+
+.pg{display:none}.pg.on{display:block}
+.emp{text-align:center;padding:50px 16px;color:var(--tx3)}.emp .eic{font-size:2.5rem;margin-bottom:10px}
+
+/* 모달 */
+.mbg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:500;align-items:center;justify-content:center;padding:16px}
+.mbg.on{display:flex}
+.mdl{background:var(--sf);border-radius:var(--r2);box-shadow:0 10px 40px rgba(0,0,0,.15);max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:24px}
+.mdl h3{font-size:1.05rem;font-weight:600;margin-bottom:16px}
+.mac{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:14px;border-top:1px solid var(--bd2)}
+
+.tc{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:6px}
+.tst{background:var(--tx);color:#fff;padding:10px 18px;border-radius:var(--r);font-size:.82rem;box-shadow:var(--sh);animation:ti .25s ease;max-width:300px}
+.tst.te{background:var(--rd)}.tst.to{background:var(--gn)}
+@keyframes ti{from{opacity:0;transform:translateY(8px)}}
+
+.ld{position:fixed;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;z-index:998}
+.sp{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--pri);border-radius:50%;animation:spn .7s linear infinite}
+@keyframes spn{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .sb{transform:translateX(-260px);width:260px}.sb.open{transform:translateX(0)}
+  .mm{display:block}
+  .mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:99}.mov.open{display:block}
+  .mn{margin-left:0}.sts{grid-template-columns:1fr 1fr}.gd{grid-template-columns:1fr}
+  .mc{padding:14px}.mh{padding:0 14px}.tb{flex-direction:column;align-items:stretch}.sbox{max-width:100%}
+  .lc{padding:32px 24px}
+}
+</style>
+</head>
+<body>
+
+<div id="loginWrap">
+  <div class="lc">
+    <div class="logo">
+      <div class="logo-i">🩺</div>
+      <h1>상담 관리 포털</h1>
+      <p class="sub">명불허전학원 — 통합 상담 시스템</p>
+    </div>
+    <div class="lerr" id="lerr"></div>
+    <div class="fld"><label>이름</label><input type="text" id="iu" placeholder="강사/상담자 이름" autocomplete="off"></div>
+    <div class="fld"><label>비밀번호</label><input type="password" id="ip" placeholder="비밀번호"></div>
+    <button class="lbtn" id="lbtn" onclick="doLogin()">로그인</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="mov" id="mov" onclick="tSB()"></div>
+  <aside class="sb" id="sb">
+    <div class="sb-hd"><h2>🩺 상담 관리</h2><span>명불허전학원</span></div>
+    <nav class="sb-nv">
+      <div class="sb-lb">메인</div>
+      <button class="ni on" data-p="dashboard" onclick="go('dashboard')"><span class="ic">📊</span> 대시보드</button>
+      <div class="sb-lb">2주 학생 상담</div>
+      <button class="ni" data-p="session" onclick="go('session')"><span class="ic">🩺</span> 상담 시작</button>
+      <button class="ni" data-p="biweekly" onclick="go('biweekly')"><span class="ic">📄</span> 2주 리포트</button>
+      <div class="sb-lb">학부모 상담</div>
+      <button class="ni" data-p="parent-report" onclick="go('parent-report')"><span class="ic">📋</span> 학부모 리포트</button>
+      <button class="ni" data-p="parent-consult" onclick="go('parent-consult')"><span class="ic">✏️</span> 상담 기록</button>
+      <div class="sb-lb">시스템</div>
+      <button class="ni" data-p="queue" onclick="go('queue')"><span class="ic">⚙️</span> 대기열<span class="bdg" id="qB" style="display:none">0</span></button>
+    </nav>
+    <div class="sb-ft">
+      <div class="ur"><div class="av" id="uA">?</div><div><div class="un" id="uN">—</div><div class="uro" id="uR">—</div></div></div>
+      <button class="lo-btn" onclick="doLogout()">↩ 로그아웃</button>
+    </div>
+  </aside>
+
+  <div class="mn">
+    <header class="mh">
+      <button class="mm" onclick="tSB()">☰</button>
+      <div class="tt" id="pT">대시보드</div>
+      <div class="ac">
+        <button class="btn bo bs" onclick="loadDash()">↻ 새로고침</button>
+        <div class="qm" id="qM">
+          <div class="qs"><span class="qd" style="background:var(--or)"></span> 대기 <b id="qW">0</b></div>
+          <div class="qs"><span class="qd" style="background:var(--pri)"></span> 처리중 <b id="qP">0</b></div>
+        </div>
+      </div>
+    </header>
+    <div class="mc">
+      <div class="pg on" id="pg-dashboard">
+        <div class="sts">
+          <div class="sc"><div class="sl">👥 전체 학생</div><div class="sv" id="st0">—</div></div>
+          <div class="sc"><div class="sl">✅ 상담 완료</div><div class="sv" id="st1">—</div></div>
+          <div class="sc"><div class="sl">⏰ 상담 예정</div><div class="sv" id="st2">—</div><div class="ss">12~16일 경과</div></div>
+          <div class="sc"><div class="sl">⚠️ 상담 지연</div><div class="sv" id="st3">—</div><div class="ss">16일 이상</div></div>
+        </div>
+        <div class="ap" id="aP" style="display:none"><h3>📅 곧 상담이 필요한 학생</h3><div id="aL"></div></div>
+        <div class="tb">
+          <div class="sbox"><span>🔍</span><input type="text" id="sI" placeholder="학생 이름 검색..." oninput="render()"></div>
+          <div class="fg">
+            <button class="fb on" data-f="all" onclick="setF('all')">전체</button>
+            <button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button>
+            <button class="fb" data-f="soon" onclick="setF('soon')">예정</button>
+            <button class="fb" data-f="normal" onclick="setF('normal')">정상</button>
+          </div>
+        </div>
+        <div class="gd" id="gd"></div>
+        <div class="emp" id="em" style="display:none"><div class="eic">📋</div><p>표시할 학생이 없습니다.</p></div>
+      </div>
+      <div class="pg" id="pg-session"><div class="emp"><div class="eic">🩺</div><p>2주 학생 상담 — 다음 단계에서 구현됩니다.</p></div></div>
+      <div class="pg" id="pg-biweekly"><div class="emp"><div class="eic">📄</div><p>2주 리포트 관리 — 다음 단계에서 구현됩니다.</p></div></div>
+      <div class="pg" id="pg-parent-report"><div class="emp"><div class="eic">📋</div><p>학부모 리포트 — 다음 단계에서 구현됩니다.</p></div></div>
+      <div class="pg" id="pg-parent-consult"><div class="emp"><div class="eic">✏️</div><p>학부모 상담 기록 — 다음 단계에서 구현됩니다.</p></div></div>
+      <div class="pg" id="pg-queue"><div class="emp"><div class="eic">⚙️</div><p>대기열 관리 — 다음 단계에서 구현됩니다.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="mbg" id="modal"><div class="mdl"><h3 id="mT">학생 상세</h3><div id="mB"></div><div class="mac"><button class="btn bo" onclick="cMod()">닫기</button><button class="btn bp" id="mA">🩺 상담 시작</button></div></div></div>
+<div class="tc" id="tC"></div>
+<div class="ld" id="ld" style="display:none"><div class="sp"></div></div>
+
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbz0HcYFu1zEAe7NjEmf3mT7oC2o6ZL84AxzQXryAwVX5gC5i7FBljeWdaUPVNx86Ct2/exec';
+
+var S = { user:'', role:'', students:[], filter:'all', page:'dashboard' };
+
+document.getElementById('ip').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+document.getElementById('iu').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('ip').focus(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') cMod(); });
+
+// ─── fetch 래퍼 ─────────────────────────────────────────────
+function apiGet(action, params, cb) {
+  var qs = new URLSearchParams(Object.assign({ action: action }, params || {}));
+  fetch(API + '?' + qs.toString())
+    .then(function(r){ return r.json(); })
+    .then(cb)
+    .catch(function(e){ cb({ success:false, error:e.message }); });
+}
+function apiPost(action, body, cb) {
+  fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(Object.assign({ action: action }, body || {}))
+  })
+    .then(function(r){ return r.json(); })
+    .then(cb)
+    .catch(function(e){ cb({ success:false, error:e.message }); });
+}
+
+// ─── 로그인 ─────────────────────────────────────────────────
+function doLogin() {
+  var u = document.getElementById('iu').value.trim();
+  var p = document.getElementById('ip').value.trim();
+  var btn = document.getElementById('lbtn');
+  if(!u||!p){ sErr('이름과 비밀번호를 입력해주세요.'); return; }
+
+  btn.disabled=true; btn.textContent='로그인 중...';
+  document.getElementById('lerr').style.display='none';
+
+  apiPost('cp_login', { user:u, pass:p }, function(res){
+    btn.disabled=false; btn.textContent='로그인';
+    if(res.success){
+      S.user=res.user; S.role=res.role;
+      enterApp();
+    } else {
+      sErr(res.error||'로그인 실패');
+    }
+  });
+}
+function sErr(m){ var e=document.getElementById('lerr'); e.textContent=m; e.style.display='block'; }
+function doLogout(){
+  S.user=''; S.role='';
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('loginWrap').classList.remove('hide');
+  document.getElementById('iu').value=''; document.getElementById('ip').value='';
+}
+function enterApp(){
+  document.getElementById('loginWrap').classList.add('hide');
+  document.getElementById('app').classList.add('on');
+  document.getElementById('uA').textContent=S.user.charAt(0);
+  document.getElementById('uN').textContent=S.user;
+  document.getElementById('uR').textContent=S.role;
+  loadDash(); loadQ();
+}
+
+// ─── 대시보드 ───────────────────────────────────────────────
+function loadDash(){
+  sLd(true);
+  apiGet('cp_dashboard', {}, function(res){
+    sLd(false);
+    if(res.success){ S.students=res.students||[]; calcSt(); renderAl(); render(); }
+    else toast(res.error||'로드 실패','te');
+  });
+}
+
+function gSt(s){
+  var keys=Object.keys(s);
+  var lk=keys.find(function(k){ return k.indexOf('최근상담일')>-1||k.indexOf('2주상담일')>-1||k.indexOf('마지막상담일')>-1; });
+  var v=lk?s[lk]:null;
+  if(!v||v===''||v==='-') return {st:'new',lb:'신규',d:null};
+  var dt=new Date(v); if(isNaN(dt.getTime())) return {st:'new',lb:'신규',d:null};
+  var diff=Math.floor((new Date()-dt)/864e5);
+  if(diff>16) return {st:'overdue',lb:'지연 ('+diff+'일)',d:diff};
+  if(diff>=12) return {st:'soon',lb:diff+'일 경과',d:diff};
+  return {st:'normal',lb:'정상',d:diff};
+}
+
+function calcSt(){
+  var t=0,ok=0,sn=0,ov=0;
+  S.students.forEach(function(s){ t++; var x=gSt(s).st; if(x==='normal')ok++; else if(x==='soon')sn++; else if(x==='overdue')ov++; });
+  document.getElementById('st0').textContent=t;
+  document.getElementById('st1').textContent=ok;
+  document.getElementById('st2').textContent=sn;
+  document.getElementById('st3').textContent=ov;
+}
+
+function renderAl(){
+  var urg=S.students.map(function(s){return Object.assign({},s,{_s:gSt(s)});})
+    .filter(function(s){return s._s.st==='overdue'||s._s.st==='soon';})
+    .sort(function(a,b){return(b._s.d||0)-(a._s.d||0);});
+  var p=document.getElementById('aP'),l=document.getElementById('aL');
+  if(!urg.length){p.style.display='none';return;}
+  p.style.display='block';
+  l.innerHTML=urg.slice(0,8).map(function(s){
+    var c=s._s.st==='overdue'?'var(--rd)':'var(--or)';
+    var nm=esc(String(s[Object.keys(s)[0]]||'—'));
+    return '<div class="si"><span class="sd" style="background:'+c+'"></span><span class="nm">'+nm+'</span><span class="dt">'+esc(s._s.lb)+'</span></div>';
+  }).join('');
+}
+
+function render(){
+  var gd=document.getElementById('gd'),em=document.getElementById('em');
+  var q=document.getElementById('sI').value.trim().toLowerCase();
+  var cols=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6'];
+
+  var list=S.students.filter(function(s){
+    var nm=String(s[Object.keys(s)[0]]||'').toLowerCase();
+    if(q&&nm.indexOf(q)===-1) return false;
+    if(S.filter==='all') return true;
+    return gSt(s).st===S.filter;
+  });
+
+  if(!list.length){gd.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+
+  gd.innerHTML=list.map(function(s,i){
+    var keys=Object.keys(s).filter(function(k){return k.charAt(0)!=='_';});
+    var nm=String(s[keys[0]]||'—');
+    var st=gSt(s);
+    var col=cols[i%cols.length];
+    var pK=keys.find(function(k){return k.indexOf('학부모')>-1&&k.indexOf('상담일')>-1;});
+    var cK=keys.find(function(k){return k.indexOf('상담회차')>-1||k.indexOf('상담횟수')>-1;});
+    var stc=st.st==='normal'?'sn':st.st==='soon'?'ss2':st.st==='overdue'?'so':'snw';
+
+    return '<div class="cd" onclick="oMod(\''+esc(nm)+'\')"><div class="ch">'+
+      '<div class="cav" style="background:'+col+'">'+esc(nm.charAt(0))+'</div>'+
+      '<div><div class="cn">'+esc(nm)+'</div><div class="cm">'+(st.d!==null?st.d+'일 전 상담':'상담 기록 없음')+'</div></div>'+
+      '<span class="bds '+stc+'">'+esc(st.lb)+'</span></div>'+
+      '<div class="cb"><div class="ir"><span class="l">학부모 상담</span><span class="v">'+esc(String(pK?s[pK]:'—'))+'</span></div>'+
+      '<div class="ir"><span class="l">상담 회차</span><span class="v">'+esc(String(cK?s[cK]:'—'))+'</span></div></div>'+
+      '<div class="ca" onclick="event.stopPropagation()">'+
+      '<button class="btn bp bs" onclick="sC(\''+esc(nm)+'\')">🩺 상담</button>'+
+      '<button class="btn bo bs" onclick="vR(\''+esc(nm)+'\')">📄 리포트</button></div></div>';
+  }).join('');
+}
+
+function setF(f){S.filter=f;document.querySelectorAll('.fb').forEach(function(b){b.classList.toggle('on',b.dataset.f===f);});render();}
+
+// ─── 대기열 ─────────────────────────────────────────────────
+function loadQ(){
+  apiGet('cp_queueStatus',{},function(res){
+    if(!res.success) return;
+    var st=res.stats;
+    document.getElementById('qW').textContent=st.waiting;
+    document.getElementById('qP').textContent=st.processing;
+    var b=document.getElementById('qB'), pn=st.waiting+st.processing;
+    if(pn>0){b.textContent=pn;b.style.display='inline';}else b.style.display='none';
+  });
+}
+
+// ─── 네비게이션 ─────────────────────────────────────────────
+function go(p){
+  S.page=p;
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.toggle('on',n.dataset.p===p);});
+  document.querySelectorAll('.pg').forEach(function(pg){pg.classList.toggle('on',pg.id==='pg-'+p);});
+  var tt={dashboard:'대시보드',session:'2주 학생 상담',biweekly:'2주 리포트','parent-report':'학부모 리포트','parent-consult':'학부모 상담 기록',queue:'대기열 관리'};
+  document.getElementById('pT').textContent=tt[p]||p;
+  cSB();
+}
+
+function tSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('mov').classList.toggle('open');}
+function cSB(){document.getElementById('sb').classList.remove('open');document.getElementById('mov').classList.remove('open');}
+
+function oMod(nm){
+  var s=S.students.find(function(x){return String(x[Object.keys(x)[0]])===nm;});
+  if(!s)return;
+  document.getElementById('mT').textContent=nm+' — 상세 정보';
+  var keys=Object.keys(s).filter(function(k){return k.charAt(0)!=='_';});
+  var h='';
+  keys.forEach(function(k){var v=s[k];if(v===''||v==null)return;h+='<div class="ir" style="padding:6px 0;border-bottom:1px solid var(--bd2)"><span class="l">'+esc(k)+'</span><span class="v">'+esc(String(v))+'</span></div>';});
+  document.getElementById('mB').innerHTML=h;
+  document.getElementById('mA').onclick=function(){cMod();sC(nm);};
+  document.getElementById('modal').classList.add('on');
+}
+function cMod(){document.getElementById('modal').classList.remove('on');}
+
+function sC(nm){toast(nm+' 상담 — 다음 단계에서 구현됩니다.');}
+function vR(nm){toast(nm+' 리포트 — 다음 단계에서 구현됩니다.');}
+
+function sLd(v){document.getElementById('ld').style.display=v?'flex':'none';}
+function toast(m,t){var c=document.getElementById('tC'),e=document.createElement('div');e.className='tst'+(t==='te'?' te':t==='to'?' to':'');e.textContent=m;c.appendChild(e);setTimeout(function(){e.remove();},3500);}
+function esc(s){var e=document.createElement('span');e.textContent=s;return e.innerHTML;}
+</script>
+</body>
+</html>
