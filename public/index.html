@@ -168,49 +168,88 @@ input,button,select,textarea{font-family:inherit}button{cursor:pointer;border:no
 
 <!-- ===== 2. 상담 세션 ===== -->
 <div class="pg" id="pg-session">
-  <div class="panel">
-    <h3>🩺 2주 학생 상담 세션</h3>
-    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-      <div class="fld" style="flex:1;margin:0;min-width:150px"><label>학생 선택</label>
-        <select id="ssStudent"><option value="">— 학생 선택 —</option></select></div>
-      <div class="fld" style="flex:1;margin:0;min-width:150px"><label>상담자</label>
-        <select id="ssCounselor"><option value="">— 상담자 —</option><option value="손정화">손정화</option><option value="박건영">박건영</option></select></div>
+  <!-- 세션 헤더 -->
+  <div style="background:linear-gradient(135deg,#1a237e,#283593);padding:16px 20px;border-radius:var(--r2);color:#fff;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <h3 style="font-size:1.05rem;font-weight:800;margin:0" id="sessTitle">🩺 학생 상담 세션</h3>
+    <div style="display:flex;align-items:center;gap:12px;font-size:.82rem">
+      <span id="sessDate"></span>
+      <select id="ssStudent" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:#fff;color:#1a237e;font-weight:700;font-size:.82rem"><option value="">학생 선택</option></select>
+      <select id="ssCounselor" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:#fff;color:#1a237e;font-weight:700;font-size:.82rem"><option value="">상담자</option><option>손정화</option><option>박건영</option></select>
     </div>
-    <button class="btn bp" onclick="generateBriefing()" id="briefBtn">🤖 AI 브리핑 생성 (약 30초)</button>
   </div>
-  <!-- AI 브리핑 결과 -->
-  <div class="panel" id="briefResult" style="display:none">
-    <h3>🤖 AI 사전 브리핑</h3>
-    <div style="font-size:.82rem;color:var(--tx3);margin-bottom:10px" id="bp_name">—</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
-      <div style="padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:.68rem;color:var(--tx3)">성향</div><div style="font-size:.8rem;font-weight:600" id="bp_disp">—</div></div>
-      <div style="padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:.68rem;color:var(--tx3)">동기</div><div style="font-size:.8rem;font-weight:600" id="bp_moti">—</div></div>
-      <div style="padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:.68rem;color:var(--tx3)">과제</div><div style="font-size:.8rem;font-weight:600" id="bp_chal">—</div></div>
+  <!-- 2컬럼 레이아웃 -->
+  <div style="display:grid;grid-template-columns:1fr;gap:14px" id="sessGrid">
+    <!-- 좌측: AI 브리핑 -->
+    <div id="sessLeft">
+      <!-- 브리핑 생성 버튼 -->
+      <div class="panel" id="briefStart">
+        <div style="font-size:.68rem;font-weight:800;color:#1a237e;text-transform:uppercase;letter-spacing:2px;margin-bottom:2px">AI BRIEFING</div>
+        <div style="font-size:1rem;font-weight:700;margin-bottom:6px">AI 사전 브리핑</div>
+        <div style="font-size:.8rem;color:var(--tx3);margin-bottom:12px">버튼을 클릭하면 최근 2주 데이터를 기반으로 AI가 브리핑을 생성합니다.</div>
+        <button class="btn bp" onclick="generateBriefing()" id="briefBtn" style="width:100%;padding:12px;font-size:.9rem">🤖 AI 브리핑 생성 (약 30초)</button>
+      </div>
+      <!-- 브리핑 결과 -->
+      <div id="briefResult" style="display:none">
+        <div class="panel">
+          <div style="font-size:.68rem;font-weight:800;color:#1a237e;text-transform:uppercase;letter-spacing:2px;margin-bottom:2px">STUDENT PROFILE</div>
+          <div style="font-size:1rem;font-weight:700;margin-bottom:8px" id="bp_name"></div>
+          <div style="padding:10px 12px;background:#F5F3EF;border-radius:8px;border-left:3px solid #1565C0;margin-bottom:8px"><div style="font-size:.68rem;font-weight:700;color:#1565C0;margin-bottom:3px">학습 성향</div><div style="font-size:.85rem;color:#505050" id="bp_disp">—</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="padding:10px 12px;background:#F5F3EF;border-radius:8px;border-left:3px solid #1565C0"><div style="font-size:.68rem;font-weight:700;color:#1565C0;margin-bottom:3px">핵심 동기</div><div style="font-size:.85rem;color:#505050" id="bp_moti">—</div></div>
+            <div style="padding:10px 12px;background:#F5F3EF;border-radius:8px;border-left:3px solid #1565C0"><div style="font-size:.68rem;font-weight:700;color:#1565C0;margin-bottom:3px">핵심 과제</div><div style="font-size:.85rem;color:#505050" id="bp_chal">—</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div style="font-size:.68rem;font-weight:800;color:#1a237e;text-transform:uppercase;letter-spacing:2px;margin-bottom:2px">14-DAY METRICS</div>
+          <div style="font-size:1rem;font-weight:700;margin-bottom:6px">2주간 학습 지표</div>
+          <div style="font-size:.78rem;color:var(--tx3);margin-bottom:10px" id="bm_period"></div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px" id="metricsGrid"></div>
+          <div id="qualSummaries"></div>
+        </div>
+        <div class="panel">
+          <div style="font-size:.68rem;font-weight:800;color:#1a237e;text-transform:uppercase;letter-spacing:2px;margin-bottom:2px">FOLLOW-UP</div>
+          <div style="font-size:1rem;font-weight:700;margin-bottom:8px">직전 상담 약속 이행</div>
+          <div id="prevGoalArea"></div>
+          <div id="followUpArea"></div>
+        </div>
+        <div class="panel">
+          <div style="font-size:.68rem;font-weight:800;color:#1a237e;text-transform:uppercase;letter-spacing:2px;margin-bottom:2px">COUNSELING AGENDA</div>
+          <div style="font-size:1rem;font-weight:700;margin-bottom:8px" id="agendaTheme">💬 상담 어젠다</div>
+          <div id="discussionPts"></div>
+        </div>
+      </div>
     </div>
-    <div style="font-size:.78rem;font-weight:600;margin-bottom:6px">📊 14일 지표</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px" id="metricsGrid"></div>
-    <div id="qualSummaries" style="margin-bottom:10px"></div>
-    <div id="prevGoalArea" style="margin-bottom:10px"></div>
-    <div id="followUpArea" style="margin-bottom:10px"></div>
-    <div style="font-size:.78rem;font-weight:600;margin-bottom:6px" id="agendaTheme">💬 상담 어젠다</div>
-    <div id="discussionPts" style="margin-bottom:10px"></div>
+    <!-- 우측: 체크리스트 (PC에서 sticky) -->
+    <div id="sessRight">
+      <div class="panel" id="checklistPanel" style="display:none">
+        <div style="font-size:.68rem;font-weight:800;color:#1a237e;text-transform:uppercase;letter-spacing:2px;margin-bottom:2px">CHECKLIST</div>
+        <div style="font-size:1rem;font-weight:700;margin-bottom:12px">상담 체크리스트</div>
+        <div class="fld"><label>학생 자기진단 (SA)<span style="color:#C41E3A;margin-left:2px">*</span></label>
+          <select id="ckSA"><option value="">선택</option><option>매우 긍정적</option><option>긍정적</option><option>보통</option><option>부정적</option><option>매우 부정적</option></select></div>
+        <div class="fld"><label>상담자 관찰 (OB)<span style="color:#C41E3A;margin-left:2px">*</span></label>
+          <select id="ckOB"><option value="">선택</option><option>수용적/안정적</option><option>적극적/의욕적</option><option>보통/무난</option><option>방어적/불안</option><option>무기력/무관심</option></select></div>
+        <div class="fld"><label>주요 저해 요인 (BL)</label>
+          <select id="ckBL" onchange="toggleBLInput()"><option value="">없음</option><option>휴대폰 과다 사용</option><option>수면 부족</option><option>교우 관계</option><option>가정 환경</option><option>건강 문제</option><option>학습 동기 부족</option><option value="기타">기타 (직접 입력)</option></select>
+          <input type="text" id="ckBL_custom" placeholder="저해 요인을 입력하세요" style="display:none;margin-top:6px"></div>
+        <div class="fld"><label>직전 목표 이행 (PF)<span style="color:#C41E3A;margin-left:2px">*</span></label>
+          <select id="ckPF"><option value="">선택</option><option>첫 상담 (직전 목표 없음)</option><option>100% 달성 (매우 잘함)</option><option>대체로 잘함 (80%)</option><option>보통 (50%)</option><option>노력 부족 (미이행)</option></select></div>
+        <div style="font-size:.68rem;font-weight:800;color:#1a237e;text-transform:uppercase;letter-spacing:2px;margin:16px 0 2px">GOAL SETTING</div>
+        <div style="font-size:1rem;font-weight:700;margin-bottom:8px">다음 2주 학습 목표</div>
+        <div id="prevGoalDisplay"></div>
+        <div class="fld"><label>새로운 2주 목표<span style="color:#C41E3A;margin-left:2px">*</span></label>
+          <textarea id="ssGoal" rows="3" placeholder="예: 학습량(국어-20분, 영어-30분, 수학-40분) + 수면 8시간 + 휴대폰 3시간"></textarea></div>
+        <button onclick="completeSession()" id="btnComplete" style="width:100%;padding:12px;border:none;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;background:#C41E3A;color:#fff;box-shadow:0 4px 12px rgba(196,30,58,.25);transition:all .2s">✅ 상담 완료 — AI 분석 요청</button>
+        <button onclick="resetSessionForm()" style="width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:.82rem;color:var(--tx2);background:transparent;cursor:pointer;margin-top:8px">🔄 새로고침</button>
+      </div>
+    </div>
   </div>
-  <!-- 체크리스트 입력 -->
-  <div class="panel" id="checklistPanel" style="display:none">
-    <h3>📋 상담 체크리스트</h3>
-    <div class="fld"><label>SA — 학생 자기진단 <span style="color:var(--rd)">*</span></label>
-      <select id="ckSA"><option value="">선택</option><option>매우 잘함</option><option>대체로 잘함</option><option>보통</option><option>노력 부족</option></select></div>
-    <div class="fld"><label>OB — 상담자 관찰 (정서/태도) <span style="color:var(--rd)">*</span></label>
-      <select id="ckOB"><option value="">선택</option><option>매우 잘함</option><option>대체로 잘함</option><option>보통</option><option>노력 부족</option></select></div>
-    <div class="fld"><label>BL — 주요 저해요인</label>
-      <select id="ckBL" onchange="toggleBLInput()"><option value="없음">없음</option><option>휴대폰/게임 과다</option><option>수면 부족</option><option>학습 동기 저하</option><option>교우 관계</option><option>가정 환경</option><option value="기타">기타 (직접 입력)</option></select>
-      <input type="text" id="ckBL_custom" placeholder="저해 요인을 입력하세요" style="display:none;margin-top:6px"></div>
-    <div class="fld"><label>PF — 직전 목표 이행 <span style="color:var(--rd)">*</span></label>
-      <select id="ckPF"><option value="">선택</option><option>첫 상담 (직전 목표 없음)</option><option>100% 달성 (매우 잘함)</option><option>대체로 잘함 (80%)</option><option>보통 (50%)</option><option>노력 부족 (미이행)</option></select></div>
-    <div class="fld"><label>다음 2주 학습 목표 <span style="color:var(--rd)">*</span></label>
-      <textarea id="ssGoal" rows="3" placeholder="예: 학습량(국어-20분, 영어-30분, 수학-40분) + 수면 8시간 + 휴대폰 3시간"></textarea></div>
-    <button class="btn bg" onclick="completeSession()" id="btnComplete">✅ 상담 완료 — AI 분석 요청</button>
-  </div>
+  <style>
+    @media(min-width:1024px){
+      #sessGrid{grid-template-columns:1fr 320px !important}
+      #sessLeft{max-height:calc(100vh - 140px);overflow-y:auto;padding-right:6px}
+      #sessRight{position:sticky;top:70px;max-height:calc(100vh - 140px);overflow-y:auto;padding-left:6px}
+    }
+  </style>
 </div>
 
 <!-- ===== 3. 2주 리포트 ===== -->
@@ -363,21 +402,33 @@ function render(){
 }
 function setF(f){S.filter=f;document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('on',b.dataset.f===f));render()}
 
-// ─── 2. 상담 세션 (기존 SessionTemplate 로직 이식) ───
+// ─── 2. 상담 세션 (SessionTemplate.html 완전 이식) ───
 var BRIEFING_DATA = null;
 var SESSION_API_KEY = '';
 
-function startSessionFor(nm){go('session');$('ssStudent').value=nm}
+// 날짜 표시
+(function(){var d=new Date();var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');var el=$('sessDate');if(el)el.textContent=ds})();
+
+function startSessionFor(nm){go('session');$('ssStudent').value=nm;$('sessTitle').textContent='🩺 '+nm+' 학생 상담 세션'}
 function generateBriefing(){
   var nm=$('ssStudent').value,csl=$('ssCounselor').value;
   if(!nm){toast('학생을 선택하세요','te');return}
   if(!csl){toast('상담자를 선택하세요','te');return}
-  var btn=$('briefBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #fff;border-radius:50%;animation:spn .7s linear infinite;vertical-align:middle;margin-right:6px"></span>AI 분석 중... (30~60초)';
+  $('sessTitle').textContent='🩺 '+nm+' 학생 상담 세션';
+  var btn=$('briefBtn');btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.3);border-top:3px solid #fff;border-radius:50%;animation:spn .8s linear infinite;vertical-align:middle;margin-right:8px"></span>AI 분석 중... (30~60초)';
   apiGet('cp_briefingData',{student:nm},function(r){
     if(!r.success||!r.data||!r.data.prompt){btn.disabled=false;btn.textContent='🤖 AI 브리핑 생성 (약 30초)';toast(r.error||'데이터 없음','te');return}
     SESSION_API_KEY=r.data.apiKey;
-    if(r.data.prevGoal){$('prevGoalArea').innerHTML='<div style="padding:10px;background:var(--or2);border-radius:8px;border-left:3px solid var(--or);font-size:.82rem"><b>📋 직전 목표:</b> '+esc(r.data.prevGoal)+'</div>'}
-    if(r.data.isFirstSession){$('ckPF').value='첫 상담 (직전 목표 없음)';$('prevGoalArea').innerHTML='<div style="padding:10px;background:var(--pri2);border-radius:8px;font-size:.82rem;color:var(--pri);text-align:center">🎉 첫 상담 — 새로운 목표를 설정해주세요</div>'}
+    // 직전 목표 표시
+    if(r.data.prevGoal){
+      $('prevGoalArea').innerHTML='<div style="padding:10px 12px;background:#FDF3E7;border-radius:8px;border-left:3px solid #B8711A;margin-bottom:8px"><div style="font-size:.68rem;font-weight:700;color:#B8711A;margin-bottom:3px">📋 직전 상담 목표 (참고)</div><div style="font-size:.82rem;color:#505050">'+esc(r.data.prevGoal)+'</div></div>';
+      $('prevGoalDisplay').innerHTML='<div style="padding:10px 12px;background:#FDF3E7;border-radius:8px;border-left:3px solid #B8711A;margin-bottom:10px"><div style="font-size:.68rem;font-weight:700;color:#B8711A;margin-bottom:3px">📋 직전 목표</div><div style="font-size:.82rem;color:#505050">'+esc(r.data.prevGoal)+'</div></div>'
+    }
+    if(r.data.isFirstSession){
+      $('ckPF').value='첫 상담 (직전 목표 없음)';
+      $('prevGoalArea').innerHTML='<div style="padding:14px;background:#E3F2FD;border-radius:8px;border-left:3px solid #1565C0;text-align:center"><div style="font-size:1.5rem;margin-bottom:4px">🎉</div><div style="font-size:.9rem;font-weight:700;color:#1565C0;margin-bottom:3px">첫 상담입니다</div><div style="font-size:.8rem;color:#505050">직전 상담 기록이 없습니다. 이번 상담에서 첫 학습 목표를 설정해주세요.</div></div>';
+      $('prevGoalDisplay').innerHTML='<div style="padding:8px;background:#E3F2FD;border-radius:8px;font-size:.8rem;color:#1565C0;text-align:center;margin-bottom:10px">🎉 첫 상담 — 새로운 목표를 설정해주세요</div>'
+    }
     callGeminiBriefing(r.data.prompt,r.data.schema,btn)
   })
 }
@@ -390,35 +441,56 @@ async function callGeminiBriefing(prompt,schema,btn){
     if(resp.ok&&json.candidates&&json.candidates[0].content){
       var parts=json.candidates[0].content.parts,txt='';
       for(var i=0;i<parts.length;i++){if(parts[i].thought)continue;if(parts[i].text)txt+=parts[i].text}
-      BRIEFING_DATA=JSON.parse(txt);renderBriefing(BRIEFING_DATA);btn.disabled=false;btn.textContent='✅ 브리핑 완료 — 다시 생성'
+      BRIEFING_DATA=JSON.parse(txt);renderBriefing(BRIEFING_DATA);
+      btn.disabled=false;btn.textContent='✅ 브리핑 완료 — 다시 생성'
     }else throw new Error(json.error?json.error.message:'API 오류')
   }catch(e){btn.disabled=false;btn.textContent='🤖 AI 브리핑 생성 (재시도)';toast('AI 브리핑 실패: '+e.message,'te')}
 }
 function renderBriefing(b){
+  // Student Profile
   var sp=b.studentProfile||{};
   $('bp_name').textContent=(b.studentName||$('ssStudent').value)+' 학생 프로필';
   $('bp_disp').textContent=sp.dispositionSummary||'-';
   $('bp_moti').textContent=sp.coreMotivation||'-';
   $('bp_chal').textContent=sp.coreChallenge||'-';
-  var fm=b.fourteenDayMetrics||{},mg=$('metricsGrid');mg.innerHTML='';
+  // 14-Day Metrics
+  var fm=b.fourteenDayMetrics||{};
+  $('bm_period').textContent=(fm.period||'')+' · '+(fm.totalEvaluations||0)+'건 평가';
+  var mg=$('metricsGrid');mg.innerHTML='';
   (fm.quantitativeMetrics||[]).forEach(function(m){
-    var tc=m.trend==='up'?'var(--gn)':m.trend==='down'?'var(--rd)':'var(--tx)';
-    var ti=m.trend==='up'?'▲':m.trend==='down'?'▼':'—';
+    var tCls=m.trend==='up'?'#1D8348':m.trend==='down'?'#C0392B':'#1C1C1C';
+    var tIcon=m.trend==='up'?'▲':m.trend==='down'?'▼':'—';
     var df=m.currentValue-m.previousValue;var ds=df>0?'+'+df.toFixed(1):df.toFixed(1);
-    mg.innerHTML+='<div style="text-align:center;padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:1.2rem;font-weight:800;color:'+tc+'">'+m.currentValue.toFixed(1)+'</div><div style="font-size:.68rem;color:var(--tx3)">'+m.metricName+'</div><div style="font-size:.68rem;font-weight:700;color:'+tc+'">'+ti+' '+ds+'</div></div>'
+    mg.innerHTML+='<div style="text-align:center;padding:8px 4px;background:#F5F3EF;border-radius:8px"><div style="font-size:1.2rem;font-weight:800;color:'+tCls+'">'+m.currentValue.toFixed(1)+'</div><div style="font-size:.65rem;color:#999;margin-top:2px">'+m.metricName+'</div><div style="font-size:.65rem;font-weight:700;color:'+tCls+';margin-top:2px">'+tIcon+' '+ds+'</div></div>'
   });
+  // Qualitative Summaries
   var qs=$('qualSummaries');qs.innerHTML='';
-  (fm.qualitativeSummaries||[]).forEach(function(q){qs.innerHTML+='<div style="padding:8px 10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--pri);margin-bottom:6px;font-size:.8rem"><b style="color:var(--pri);font-size:.72rem">'+q.fieldName+'</b><br>'+(q.summary||q.description||'-')+'</div>'});
+  (fm.qualitativeSummaries||[]).forEach(function(q){
+    qs.innerHTML+='<div style="padding:10px 12px;background:#F5F3EF;border-radius:8px;border-left:3px solid #1565C0;margin-bottom:6px"><div style="font-size:.68rem;font-weight:700;color:#1565C0;margin-bottom:3px">'+esc(q.fieldName)+'</div><div style="font-size:.82rem;color:#505050;line-height:1.6">'+(q.summary||q.description||'-')+'</div></div>'
+  });
+  // Follow-Up
   var fu=b.previousCounselingFollowUp||{};
-  if(!b.isFirstSession&&fu.fulfillmentSummary){$('followUpArea').innerHTML='<div style="padding:8px 10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--or);margin-bottom:6px;font-size:.8rem"><b style="color:var(--or);font-size:.72rem">이행 평가</b><br>'+esc(fu.fulfillmentSummary)+'</div>'}
-  var ag=b.aiCounselingAgenda||{};$('agendaTheme').textContent='💬 '+(ag.mainTheme||'상담 진행');
+  var rawPrev=$('prevGoalArea').querySelector('div');
+  var prevText=rawPrev?rawPrev.textContent:'';
+  var isFirst=!prevText||prevText.indexOf('첫 상담')>=0;
+  if(isFirst){
+    $('followUpArea').innerHTML='<div style="padding:14px;background:#E3F2FD;border-radius:8px;border-left:3px solid #1565C0;text-align:center"><div style="font-size:1.5rem;margin-bottom:4px">🎉</div><div style="font-size:.9rem;font-weight:700;color:#1565C0;margin-bottom:3px">첫 상담입니다</div><div style="font-size:.8rem;color:#505050">직전 상담 기록이 없습니다.</div></div>'
+  }else{
+    $('followUpArea').innerHTML='<div style="padding:10px 12px;background:#F5F3EF;border-radius:8px;border-left:3px solid #1565C0;margin-bottom:6px"><div style="font-size:.68rem;font-weight:700;color:#1565C0;margin-bottom:3px">이행 평가</div><div style="font-size:.82rem;color:#505050;line-height:1.6">'+esc(fu.fulfillmentSummary||'-')+'</div></div>'
+  }
+  // Counseling Agenda
+  var ag=b.aiCounselingAgenda||{};
+  $('agendaTheme').textContent='💬 '+(ag.mainTheme||'상담 진행');
   var dp=$('discussionPts');dp.innerHTML='';
   (ag.discussionPoints||[]).forEach(function(d){
-    var tc=d.type==='Praise'?'var(--gn)':d.type==='Problem'?'var(--rd)':'var(--or)';
-    var tl=d.type==='Praise'?'👍 칭찬':d.type==='Problem'?'⚠️ 문제점':'💡 제안';
-    dp.innerHTML+='<div style="padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:6px"><div style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;background:'+tc+'15;color:'+tc+'">'+tl+'</div><div style="font-size:.82rem;font-weight:700;margin-top:4px">'+esc(d.topic)+'</div><div style="font-size:.76rem;color:var(--tx2);font-style:italic;margin-top:2px">"'+(d.script||d.evidence||'')+'"</div></div>'
+    var typeBg=d.type==='Praise'?'background:#E8F5ED;color:#1D8348':d.type==='Problem'?'background:#FDEDEC;color:#C0392B':'background:#FDF3E7;color:#B8711A';
+    var typeLabel=d.type==='Praise'?'👍 칭찬':d.type==='Problem'?'⚠️ 문제점':'💡 제안';
+    dp.innerHTML+='<div style="padding:8px 10px;background:#F5F3EF;border-radius:8px;margin-bottom:6px"><div style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:.6rem;font-weight:700;'+typeBg+';margin-bottom:4px">'+typeLabel+'</div><div style="font-size:.82rem;font-weight:700;color:#1C1C1C;margin-top:3px">'+esc(d.topic)+'</div><div style="font-size:.76rem;color:#505050;line-height:1.5;font-style:italic;margin-top:2px">"'+(d.script||d.evidence||'')+'"</div></div>'
   });
-  $('briefResult').style.display='block';$('checklistPanel').style.display='block'
+  // 표시 전환
+  $('briefResult').style.display='block';
+  $('briefStart').style.display='none';
+  $('checklistPanel').style.display='block'
 }
 function completeSession(){
   var nm=$('ssStudent').value,csl=$('ssCounselor').value;
@@ -431,14 +503,15 @@ function completeSession(){
   if(!goal){toast('학습 목표를 입력하세요','te');return}
   var btn=$('btnComplete');btn.disabled=true;btn.textContent='저장 중...';
   var bl=$('ckBL').value==='기타'?$('ckBL_custom').value:$('ckBL').value;
+  // 기존 saveSessionToQueue가 기대하는 형식과 완전히 동일
   var data={studentName:nm,counselorName:csl,sa:sa,ob:ob,bl:bl,pf:pf,goal:goal,briefingJSON:BRIEFING_DATA?JSON.stringify(BRIEFING_DATA):''};
   apiPost('cp_saveSession',{data:data},function(r){
     btn.disabled=false;btn.textContent='✅ 상담 완료 — AI 분석 요청';
-    if(r.success){toast('✅ '+nm+' 상담이 대기열에 저장되었습니다.\n사이드바에서 "'+csl+'" 설정 후 자동 처리됩니다.','to');resetSessionForm();loadQ()}
+    if(r.success){toast('✅ '+nm+' 상담 대기열 저장 완료. 사이드바에서 "'+csl+'"로 설정하세요.','to');resetSessionForm()}
     else toast(r.error||'저장 실패','te')
   })
 }
-function resetSessionForm(){$('ssStudent').value='';$('ssCounselor').value='';$('briefResult').style.display='none';$('checklistPanel').style.display='none';$('ckSA').value='';$('ckOB').value='';$('ckBL').value='없음';$('ckBL_custom').style.display='none';$('ckPF').value='';$('ssGoal').value='';$('prevGoalArea').innerHTML='';$('followUpArea').innerHTML='';BRIEFING_DATA=null;SESSION_API_KEY=''}
+function resetSessionForm(){$('ssStudent').value='';$('ssCounselor').value='';$('briefResult').style.display='none';$('briefStart').style.display='block';$('checklistPanel').style.display='none';$('ckSA').value='';$('ckOB').value='';$('ckBL').value='';$('ckBL_custom').style.display='none';$('ckPF').value='';$('ssGoal').value='';$('prevGoalArea').innerHTML='';$('prevGoalDisplay').innerHTML='';$('followUpArea').innerHTML='';$('sessTitle').textContent='🩺 학생 상담 세션';BRIEFING_DATA=null;SESSION_API_KEY='';loadQ()}
 function toggleBLInput(){var s=$('ckBL'),i=$('ckBL_custom');if(s.value==='기타'){i.style.display='block';i.focus()}else{i.style.display='none';i.value=''}}
 
 // ─── 3. 2주 리포트 ───
