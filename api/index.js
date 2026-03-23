@@ -33,7 +33,8 @@ export default function handler(req) {
 <head>
   <meta charset="utf-8">
   <title>${ogTitle}</title>
-  <meta property="og:title" content="${ogTitle}">
+  <link rel="icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta property="og:title" content="${ogTitle}">
   <meta property="og:description" content="${ogDesc}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="${url.origin}/${pathCode}">
