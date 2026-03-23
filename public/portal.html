@@ -115,7 +115,12 @@ button{cursor:pointer;border:none;background:none}
 .dtbl .st-bar{width:3px;height:100%;min-height:28px;border-radius:1px}
 .dtbl .nm-cell{font-weight:600;color:var(--ink);cursor:pointer}.dtbl .nm-cell:hover{color:var(--accent)}
 .dtbl .sub-text{font-size:10px;color:var(--t4)}
-@media(max-width:768px){.dtbl th:nth-child(n+5),.dtbl td:nth-child(n+5){display:none}.dtbl .dtbl-act{display:table-cell}}
+/* Tooltip */
+.tip-wrap{position:relative;cursor:default}
+.tip-wrap .tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;line-height:1.5;padding:8px 12px;border-radius:6px;white-space:nowrap;z-index:200;max-width:320px;white-space:normal}
+.tip-wrap .tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--ink)}
+.tip-wrap:hover .tip{display:block}
+@media(max-width:768px){.dtbl th:nth-child(n+6),.dtbl td:nth-child(n+6){display:none}.dtbl .dtbl-act{display:table-cell}}
 /* Page sections */
 .pg{display:none}.pg.on{display:block}
 .emp{text-align:center;padding:48px 16px;color:var(--t4)}.emp p{font-size:13px;margin-top:8px}
@@ -204,7 +209,7 @@ button{cursor:pointer;border:none;background:none}
   <div class="tb" style="margin-bottom:8px"><div class="sbox"><input type="text" id="sI" placeholder="학생 검색" oninput="render()"></div>
   <div class="fg"><button class="fb on" data-f="all" onclick="setF('all')">전체</button><button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button><button class="fb" data-f="soon" onclick="setF('soon')">임박</button><button class="fb" data-f="normal" onclick="setF('normal')">여유</button></div></div>
   <div class="panel" style="padding:0;overflow:hidden">
-    <table class="dtbl" id="dtbl"><thead><tr><th class="dtbl-st"></th><th style="width:32px;text-align:center">No</th><th>이름</th><th>학년</th><th>상태</th><th>다음 예정</th><th>최종 상담</th><th>횟수</th><th>학부모</th><th class="dtbl-act"></th></tr></thead><tbody id="gd"></tbody></table>
+    <table class="dtbl" id="dtbl"><thead><tr><th class="dtbl-st"></th><th style="width:32px;text-align:center">No</th><th>이름</th><th>학년</th><th>과목</th><th>상태</th><th>다음 예정</th><th>최종 상담</th><th>횟수</th><th>학부모</th><th class="dtbl-act"></th></tr></thead><tbody id="gd"></tbody></table>
     <div class="emp" id="em" style="display:none"><p>표시할 학생이 없습니다.</p></div>
   </div>
 </div>
@@ -348,6 +353,15 @@ function gSt(s){
   return{st:'normal',lb:'정상',d:14-diff,dd:''}
 }
 function calcSt(){var t=0,ok=0,sn=0,ov=0;S.students.forEach(s=>{t++;var x=gSt(s).st;if(x==='normal')ok++;else if(x==='soon')sn++;else if(x==='overdue')ov++});$('st0').textContent=t;$('st1').textContent=ok;$('st2').textContent=sn;$('st3').textContent=ov}
+// 과목 간략 파싱: "L-M [영어 - 상] / S1 [수학 - 상]" → "영어/수학"
+function parseSubjects(raw){
+  if(!raw)return'';
+  var found=[];
+  if(raw.indexOf('국어')>=0)found.push('국어');
+  if(raw.indexOf('영어')>=0)found.push('영어');
+  if(raw.indexOf('수학')>=0)found.push('수학');
+  return found.join('/');
+}
 function render(){
   var gd=$('gd'),em=$('em'),q=$('sI').value.trim().toLowerCase();
   var list=S.students.filter(s=>{
@@ -356,7 +370,6 @@ function render(){
     if(S.filter==='all')return true;
     return gSt(s).st===S.filter
   });
-  // 긴급도 순 정렬: 지연 → 임박 → 여유 → 신규
   var ord={overdue:0,soon:1,normal:2,'new':3};
   list.sort(function(a,b){var sa=gSt(a),sb=gSt(b);return(ord[sa.st]||3)-(ord[sb.st]||3)||(sa.d||0)-(sb.d||0)});
   if(!list.length){gd.innerHTML='';em.style.display='block';return}
@@ -365,23 +378,39 @@ function render(){
     var nm=String(gV(s,'학생명')||s[Object.keys(s)[0]]||'—');
     var st=gSt(s);
     var grade=gV(s,'학년')||'';
-    var subj=gV(s,'수강 과목')||gV(s,'수강과목')||'';
+    var rawSubj=gV(s,'수강 과목')||gV(s,'수강과목')||'';
+    var subj=parseSubjects(rawSubj);
     var cnt=gV(s,'상담 횟수')||gV(s,'상담횟수')||'';
     var next=gV(s,'다음 예정일')||gV(s,'다음예정일')||'';
     var last=gV(s,'최종 상담일')||gV(s,'최종상담일')||'';
     var pDate=gV(s,'학부모 최근 상담일')||gV(s,'학부모최근상담일')||'';
+    var pCount=gV(s,'회차')||'';
+    var pRequest=gV(s,'학부모 요청 사항')||gV(s,'학부모요청사항')||'';
+    var pSummary=gV(s,'상담 요약')||gV(s,'상담요약')||'';
     var barColor=st.st==='overdue'?'var(--err)':st.st==='soon'?'var(--warn)':st.st==='normal'?'var(--ok)':'var(--border)';
     var chipCls=st.st==='overdue'?'chip-err':st.st==='soon'?'chip-warn':st.st==='normal'?'chip-ok':'chip-neutral';
+    // 학부모 열: 날짜 + 회차, hover시 요청/요약 툴팁
+    var pDisp=pDate?(esc(pDate)+(pCount?' ('+esc(String(pCount))+'회)':'')):'—';
+    var hasTip=pRequest||pSummary;
+    var tipHtml='';
+    if(hasTip){
+      tipHtml='<div class="tip">';
+      if(pSummary)tipHtml+='<div style="margin-bottom:4px"><b>상담 요약</b><br>'+esc(String(pSummary).substring(0,120))+'</div>';
+      if(pRequest)tipHtml+='<div><b>학부모 요청</b><br>'+esc(String(pRequest).substring(0,120))+'</div>';
+      tipHtml+='</div>';
+    }
+    var pCell=hasTip?'<span class="tip-wrap" style="border-bottom:1px dashed var(--t4)">'+pDisp+tipHtml+'</span>':pDisp;
     return'<tr>'+
       '<td class="dtbl-st"><div class="st-bar" style="background:'+barColor+'"></div></td>'+
       '<td style="text-align:center;font-size:10px;color:var(--t4)">'+(idx+1)+'</td>'+
       '<td class="nm-cell" onclick="oMod(\''+esc(nm)+'\')">'+esc(nm)+'</td>'+
-      '<td><span class="sub-text">'+esc(grade)+(subj?' · '+esc(subj):'')+'</span></td>'+
+      '<td style="font-size:11px">'+esc(grade)+'</td>'+
+      '<td style="font-size:11px;color:var(--t3)">'+esc(subj)+'</td>'+
       '<td><span class="chip '+chipCls+'">'+esc(st.dd||st.lb)+'</span></td>'+
       '<td style="font-size:11px">'+esc(next)+'</td>'+
       '<td style="font-size:11px">'+esc(last)+'</td>'+
       '<td style="font-size:11px;text-align:center">'+esc(String(cnt))+'</td>'+
-      '<td style="font-size:11px">'+esc(pDate||'—')+'</td>'+
+      '<td style="font-size:11px">'+pCell+'</td>'+
       '<td class="dtbl-act"><button class="btn bp bs" onclick="startSessionFor(\''+esc(nm)+'\')">상담</button> <button class="btn bo bs" onclick="viewReportsFor(\''+esc(nm)+'\')">리포트</button></td>'+
       '</tr>'
   }).join('')
@@ -391,8 +420,24 @@ function setF(f){S.filter=f;document.querySelectorAll('.fb').forEach(b=>b.classL
 // 2. Session
 var BRIEFING_DATA=null,SESSION_API_KEY='';
 (function(){var d=new Date();var el=$('sessDate');if(el)el.textContent=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
-function startSessionFor(nm){go('session');$('ssStudent').value=nm;$('sessTitle').textContent=nm+' — 상담 세션'}
-function generateBriefing(){var nm=$('ssStudent').value,csl=$('ssCounselor').value;if(!nm){toast('학생을 선택하세요','te');return}if(!csl){toast('상담자를 선택하세요','te');return}$('sessTitle').textContent=nm+' — 상담 세션';var btn=$('briefBtn');btn.disabled=true;btn.innerHTML='<span class="sp" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:6px;border-width:1.5px"></span>분석 중...';apiGet('cp_briefingData',{student:nm},function(r){if(!r.success||!r.data||!r.data.prompt){btn.disabled=false;btn.textContent='브리핑 생성 (약 30초)';toast(r.error||'데이터 없음','te');return}SESSION_API_KEY=r.data.apiKey;if(r.data.prevGoal){$('prevGoalArea').innerHTML='<div class="prev-goal"><h4>직전 목표</h4><p>'+esc(r.data.prevGoal)+'</p></div>';$('prevGoalDisplay').innerHTML='<div class="prev-goal"><h4>직전 목표</h4><p>'+esc(r.data.prevGoal)+'</p></div>'}if(r.data.isFirstSession){$('ckPF').value='첫 상담 (직전 목표 없음)';$('prevGoalArea').innerHTML='<div class="brief-card"><h4>첫 상담</h4><p>직전 기록이 없습니다. 새 목표를 설정하세요.</p></div>';$('prevGoalDisplay').innerHTML='<div class="brief-card"><h4>첫 상담</h4><p>새 목표를 설정하세요.</p></div>'}callGeminiBriefing(r.data.prompt,r.data.schema,btn)})}
+function startSessionFor(nm){
+  go('session');$('ssStudent').value=nm;
+  // 학생 정보 조회 → 헤더에 학년/과목 표시
+  var s=S.students.find(x=>String(gV(x,'학생명')||x[Object.keys(x)[0]])===nm);
+  var info=nm;
+  if(s){
+    var grade=gV(s,'학년')||'';
+    var rawSubj=gV(s,'수강 과목')||gV(s,'수강과목')||'';
+    var subj=parseSubjects(rawSubj);
+    if(grade||subj) info+=' — '+(grade?(grade+' '):'')+(subj?'· '+subj:'');
+  }
+  $('sessTitle').textContent=info
+}
+function generateBriefing(){var nm=$('ssStudent').value,csl=$('ssCounselor').value;if(!nm){toast('학생을 선택하세요','te');return}if(!csl){toast('상담자를 선택하세요','te');return}
+  // 헤더에 학생 정보
+  var si=S.students.find(x=>String(gV(x,'학생명')||x[Object.keys(x)[0]])===nm);
+  var hdr=nm;if(si){var g=gV(si,'학년')||'';var sj=parseSubjects(gV(si,'수강 과목')||gV(si,'수강과목')||'');if(g||sj)hdr+=' — '+(g?(g+' '):'')+(sj?'· '+sj:'')}$('sessTitle').textContent=hdr;
+  var btn=$('briefBtn');btn.disabled=true;btn.innerHTML='<span class="sp" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:6px;border-width:1.5px"></span>분석 중...';apiGet('cp_briefingData',{student:nm},function(r){if(!r.success||!r.data||!r.data.prompt){btn.disabled=false;btn.textContent='브리핑 생성 (약 30초)';toast(r.error||'데이터 없음','te');return}SESSION_API_KEY=r.data.apiKey;if(r.data.prevGoal){$('prevGoalArea').innerHTML='<div class="prev-goal"><h4>직전 목표</h4><p>'+esc(r.data.prevGoal)+'</p></div>';$('prevGoalDisplay').innerHTML='<div class="prev-goal"><h4>직전 목표</h4><p>'+esc(r.data.prevGoal)+'</p></div>'}if(r.data.isFirstSession){$('ckPF').value='첫 상담 (직전 목표 없음)';$('prevGoalArea').innerHTML='<div class="brief-card"><h4>첫 상담</h4><p>직전 기록이 없습니다. 새 목표를 설정하세요.</p></div>';$('prevGoalDisplay').innerHTML='<div class="brief-card"><h4>첫 상담</h4><p>새 목표를 설정하세요.</p></div>'}callGeminiBriefing(r.data.prompt,r.data.schema,btn)})}
 async function callGeminiBriefing(prompt,schema,btn){var url='https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key='+SESSION_API_KEY;var payload={contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',responseSchema:schema,thinkingConfig:{thinkingLevel:'LOW'}}};try{var resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});var json=await resp.json();if(resp.ok&&json.candidates&&json.candidates[0].content){var parts=json.candidates[0].content.parts,txt='';for(var i=0;i<parts.length;i++){if(parts[i].thought)continue;if(parts[i].text)txt+=parts[i].text}BRIEFING_DATA=JSON.parse(txt);renderBriefing(BRIEFING_DATA);btn.disabled=false;btn.textContent='브리핑 완료 — 다시 생성'}else throw new Error(json.error?json.error.message:'API 오류')}catch(e){btn.disabled=false;btn.textContent='브리핑 생성 (재시도)';toast('브리핑 실패: '+e.message,'te')}}
 function renderBriefing(b){var sp=b.studentProfile||{};$('bp_name').textContent=(b.studentName||$('ssStudent').value)+' 프로필';$('bp_disp').textContent=sp.dispositionSummary||'-';$('bp_moti').textContent=sp.coreMotivation||'-';$('bp_chal').textContent=sp.coreChallenge||'-';var fm=b.fourteenDayMetrics||{};$('bm_period').textContent=(fm.period||'')+' · '+(fm.totalEvaluations||0)+'건';var mg=$('metricsGrid');mg.innerHTML='';(fm.quantitativeMetrics||[]).forEach(function(m){var tc=m.trend==='up'?'var(--ok)':m.trend==='down'?'var(--err)':'var(--ink)';var ti=m.trend==='up'?'↑':m.trend==='down'?'↓':'—';var df=m.currentValue-m.previousValue;var ds=df>0?'+'+df.toFixed(1):df.toFixed(1);mg.innerHTML+='<div class="metric"><div class="mv" style="color:'+tc+'">'+m.currentValue.toFixed(1)+'</div><div class="ml">'+m.metricName+'</div><div class="mt" style="color:'+tc+'">'+ti+' '+ds+'</div></div>'});var qs=$('qualSummaries');qs.innerHTML='';(fm.qualitativeSummaries||[]).forEach(function(q){qs.innerHTML+='<div class="brief-card"><h4>'+esc(q.fieldName)+'</h4><p>'+(q.summary||q.description||'-')+'</p></div>'});var fu=b.previousCounselingFollowUp||{};if(fu.fulfillmentSummary&&!b.isFirstSession){$('followUpArea').innerHTML='<div class="brief-card"><h4>이행 평가</h4><p>'+esc(fu.fulfillmentSummary)+'</p></div>'}var ag=b.aiCounselingAgenda||{};$('agendaTheme').textContent=ag.mainTheme||'상담 어젠다';var dp=$('discussionPts');dp.innerHTML='';(ag.discussionPoints||[]).forEach(function(d){var cls=d.type==='Praise'?'chip-ok':d.type==='Problem'?'chip-err':'chip-warn';var lbl=d.type==='Praise'?'칭찬':d.type==='Problem'?'문제점':'제안';dp.innerHTML+='<div class="script-card"><span class="script-type chip '+cls+'">'+lbl+'</span><div class="script-topic">'+esc(d.topic)+'</div><div class="script-text">'+(d.script||d.evidence||'')+'</div></div>'});$('briefResult').style.display='block';$('briefStart').style.display='none';$('checklistPanel').style.display='block'}
 function completeSession(){var nm=$('ssStudent').value,csl=$('ssCounselor').value;var sa=$('ckSA').value,ob=$('ckOB').value,pf=$('ckPF').value,goal=$('ssGoal').value.trim();if(!nm){toast('학생을 선택하세요','te');return}if(!csl){toast('상담자를 선택하세요','te');return}if(!sa||!ob||!pf||!goal){toast('필수 항목을 모두 입력하세요','te');return}var btn=$('btnComplete');btn.disabled=true;btn.textContent='저장 중...';var bl=$('ckBL').value==='기타'?$('ckBL_custom').value:$('ckBL').value;var data={studentName:nm,counselorName:csl,sa:sa,ob:ob,bl:bl,pf:pf,goal:goal,briefingJSON:BRIEFING_DATA?JSON.stringify(BRIEFING_DATA):''};apiPost('cp_saveSession',{data:data},function(r){btn.disabled=false;btn.textContent='상담 완료';if(r.success){toast(nm+' 저장 완료. AI 분석이 자동 시작됩니다.','to');resetSessionForm();setTimeout(function(){if(!isAutoProcessing){isAutoProcessing=true;apiPost('cp_forceProcess',{},function(pr){isAutoProcessing=false;if(pr.success&&pr.processed>0)toast('AI 분석 완료: '+pr.message,'to');loadQ()})}},3000)}else toast(r.error||'저장 실패','te')})}
