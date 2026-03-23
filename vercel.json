@@ -6,6 +6,10 @@
       "dest": "/public/og-image.png"
     },
     {
+      "src": "^/$",
+      "dest": "/public/portal.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/api/index.js"
     }
