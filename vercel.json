@@ -2,8 +2,8 @@
   "version": 2,
   "routes": [
     {
-      "src": "/og-image.png",
-      "dest": "/public/og-image.png"
+      "src": "/og-mbhj-v2.png",
+      "dest": "/public/og-mbhj-v2.png"
     },
     {
       "src": "/api/proxy",
