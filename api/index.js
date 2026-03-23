@@ -37,7 +37,7 @@ export default function handler(req) {
   <meta property="og:description" content="${ogDesc}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="${url.origin}/${pathCode}">
-  <meta property="og:image" content="${url.origin}/og-image.png">
+  <meta property="og:image" content="${url.origin}/og-mbhj-v2.png">
   <meta property="og:site_name" content="명불허전학원">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="${ogTitle}">
