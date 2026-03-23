@@ -73,9 +73,9 @@ button{cursor:pointer;border:none;background:none}
 .br{background:var(--err);color:#fff}.br:hover{opacity:.85}
 .bw{background:var(--warn);color:#fff}.bw:hover{opacity:.85}
 .bo{background:var(--surface);color:var(--t2);border:1px solid var(--border)}.bo:hover{border-color:var(--t3);color:var(--ink)}
-.bs{height:30px;padding:4px 10px;font-size:12px}
+.bs{height:26px;padding:2px 8px;font-size:11px}
 /* Chips */
-.chip{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:11px;font-size:12px;font-weight:600}
+.chip{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;font-size:11px;font-weight:600}
 .chip-ok{background:var(--ok-bg);color:var(--ok)}.chip-warn{background:var(--warn-bg);color:var(--warn)}.chip-err{background:var(--err-bg);color:var(--err)}.chip-accent{background:var(--accent-bg);color:var(--accent)}.chip-neutral{background:var(--bg);color:var(--t3)}
 .mc{padding:20px 24px}
 /* Cards */
@@ -86,7 +86,7 @@ button{cursor:pointer;border:none;background:none}
 /* Stats */
 .sts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
-.sc .sl{font-size:12px;font-weight:600;color:var(--t4);letter-spacing:.02em;margin-bottom:4px}
+.sc .sl{font-size:11px;font-weight:600;color:var(--t4);letter-spacing:.02em;margin-bottom:2px}
 .sc .sv{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.1}
 .sc .ss{font-size:12px;color:var(--t4);margin-top:3px}
 /* Toolbar */
@@ -105,21 +105,23 @@ button{cursor:pointer;border:none;background:none}
 .rpt-item .rpt-info{flex:1}.rpt-item .rpt-name{font-size:14px;font-weight:500}.rpt-item .rpt-date{font-size:12px;color:var(--t4)}
 .rpt-item .rpt-acts{display:flex;gap:4px}
 /* Dashboard table */
-.dtbl{width:100%;border-collapse:collapse;font-size:13px}
-.dtbl th{padding:9px 12px;text-align:left;font-size:12px;font-weight:600;color:var(--t4);letter-spacing:.02em;border-bottom:1px solid var(--border);background:var(--bg);white-space:nowrap}
-.dtbl td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.dtbl tbody tr{transition:background .1s}.dtbl tbody tr:hover{background:var(--bg)}
+.dtbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.dtbl th{padding:5px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--t4);letter-spacing:.02em;border-bottom:1px solid var(--border);background:var(--bg);white-space:nowrap;overflow:hidden}
+.dtbl td{padding:4px 8px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dtbl tbody tr{transition:background .1s;height:36px}.dtbl tbody tr:hover{background:var(--bg)}
 .dtbl tbody tr:last-child td{border-bottom:none}
-.dtbl .dtbl-st{width:3px;padding:0}
-.dtbl .dtbl-act{width:110px;text-align:right}
-.dtbl .st-bar{width:3px;height:100%;min-height:30px;border-radius:1px}
-.dtbl .nm-cell{font-weight:600;color:var(--ink);cursor:pointer}.dtbl .nm-cell:hover{color:var(--accent)}
-.dtbl .sub-text{font-size:12px;color:var(--t4)}
-/* Tooltip — JS controlled position */
+.dtbl .dtbl-st{width:3px;padding:0;overflow:visible}
+.dtbl .dtbl-act{width:130px;text-align:right;overflow:visible;white-space:nowrap}
+.dtbl .st-bar{width:3px;height:24px;border-radius:1px}
+.dtbl .nm-cell{font-weight:600;color:var(--ink);cursor:pointer;overflow:hidden;text-overflow:ellipsis}.dtbl .nm-cell:hover{color:var(--accent)}
+.dtbl .act-btns{display:inline-flex;gap:4px}
+/* column widths */
+.dtbl .col-no{width:32px;text-align:center}.dtbl .col-nm{width:70px}.dtbl .col-gr{width:42px}.dtbl .col-sb{width:80px}.dtbl .col-st{width:72px}.dtbl .col-dt{width:90px}.dtbl .col-cnt{width:40px;text-align:center}.dtbl .col-pr{width:120px}
+/* Tooltip */
 .tip-trigger{border-bottom:1px dashed var(--t4);cursor:default}
-.tip-box{display:none;position:fixed;background:var(--ink);color:#fff;font-size:13px;line-height:1.6;padding:10px 14px;border-radius:6px;z-index:600;width:300px;pointer-events:none}
+.tip-box{display:none;position:fixed;background:var(--ink);color:#fff;font-size:12px;line-height:1.6;padding:10px 14px;border-radius:6px;z-index:600;width:320px;pointer-events:none}
 .tip-box b{font-weight:600;color:#fff}
-@media(max-width:768px){.dtbl th:nth-child(n+6),.dtbl td:nth-child(n+6){display:none}.dtbl .dtbl-act{display:table-cell}}
+@media(max-width:768px){.dtbl{table-layout:auto}.dtbl th:nth-child(n+7),.dtbl td:nth-child(n+7){display:none}.dtbl .dtbl-act{display:table-cell}}
 /* Page sections */
 .pg{display:none}.pg.on{display:block}
 .emp{text-align:center;padding:48px 16px;color:var(--t4)}.emp p{font-size:14px;margin-top:8px}
@@ -209,7 +211,7 @@ button{cursor:pointer;border:none;background:none}
   <div class="tb" style="margin-bottom:8px"><div class="sbox"><input type="text" id="sI" placeholder="학생 검색" oninput="render()"></div>
   <div class="fg"><button class="fb on" data-f="all" onclick="setF('all')">전체</button><button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button><button class="fb" data-f="soon" onclick="setF('soon')">임박</button><button class="fb" data-f="normal" onclick="setF('normal')">여유</button><button class="fb" data-f="none" onclick="setF('none')">미상담</button></div></div>
   <div class="panel" style="padding:0;overflow:hidden">
-    <table class="dtbl" id="dtbl"><thead><tr><th class="dtbl-st"></th><th style="width:32px;text-align:center">No</th><th>이름</th><th>학년</th><th>과목</th><th>상태</th><th>다음 예정</th><th>최종 상담</th><th>횟수</th><th>학부모</th><th class="dtbl-act"></th></tr></thead><tbody id="gd"></tbody></table>
+    <table class="dtbl" id="dtbl"><thead><tr><th class="dtbl-st"></th><th class="col-no">No</th><th class="col-nm">이름</th><th class="col-gr">학년</th><th class="col-sb">과목</th><th class="col-st">상태</th><th class="col-dt">다음 예정</th><th class="col-dt">최종 상담</th><th class="col-cnt">횟수</th><th class="col-pr">학부모</th><th class="dtbl-act"></th></tr></thead><tbody id="gd"></tbody></table>
     <div class="emp" id="em" style="display:none"><p>표시할 학생이 없습니다.</p></div>
   </div>
 </div>
@@ -404,16 +406,16 @@ function render(){
     var pCell=hasTip?'<span class="tip-trigger" onmouseenter="showTip(event,this)" onmouseleave="hideTip()" data-tip="'+esc(tipData)+'">'+pDisp+'</span>':pDisp;
     return'<tr>'+
       '<td class="dtbl-st"><div class="st-bar" style="background:'+barColor+'"></div></td>'+
-      '<td style="text-align:center;font-size:12px;color:var(--t4)">'+(idx+1)+'</td>'+
+      '<td class="col-no">'+(idx+1)+'</td>'+
       '<td class="nm-cell" onclick="oMod(\''+esc(nm)+'\')">'+esc(nm)+'</td>'+
-      '<td style="font-size:13px">'+esc(grade)+'</td>'+
-      '<td style="font-size:13px;color:var(--t3)">'+esc(subj)+'</td>'+
+      '<td>'+esc(grade)+'</td>'+
+      '<td style="color:var(--t3)">'+esc(subj)+'</td>'+
       '<td><span class="chip '+chipCls+'">'+esc(st.dd||st.lb)+'</span></td>'+
-      '<td style="font-size:13px">'+esc(next)+'</td>'+
-      '<td style="font-size:13px">'+esc(last)+'</td>'+
-      '<td style="font-size:13px;text-align:center">'+esc(String(cnt))+'</td>'+
-      '<td style="font-size:13px">'+pCell+'</td>'+
-      '<td class="dtbl-act"><button class="btn bp bs" onclick="startSessionFor(\''+esc(nm)+'\')">상담</button> <button class="btn bo bs" onclick="viewReportsFor(\''+esc(nm)+'\')">리포트</button></td>'+
+      '<td>'+esc(next)+'</td>'+
+      '<td>'+esc(last)+'</td>'+
+      '<td class="col-cnt">'+esc(String(cnt))+'</td>'+
+      '<td>'+pCell+'</td>'+
+      '<td class="dtbl-act"><div class="act-btns"><button class="btn bp bs" onclick="startSessionFor(\''+esc(nm)+'\')">상담</button><button class="btn bo bs" onclick="viewReportsFor(\''+esc(nm)+'\')">리포트</button></div></td>'+
       '</tr>'
   }).join('')
 }
