@@ -204,7 +204,7 @@ button{cursor:pointer;border:none;background:none}
   <div class="tb" style="margin-bottom:8px"><div class="sbox"><input type="text" id="sI" placeholder="학생 검색" oninput="render()"></div>
   <div class="fg"><button class="fb on" data-f="all" onclick="setF('all')">전체</button><button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button><button class="fb" data-f="soon" onclick="setF('soon')">임박</button><button class="fb" data-f="normal" onclick="setF('normal')">여유</button></div></div>
   <div class="panel" style="padding:0;overflow:hidden">
-    <table class="dtbl" id="dtbl"><thead><tr><th class="dtbl-st"></th><th>이름</th><th>학년</th><th>상태</th><th>다음 예정</th><th>최종 상담</th><th>횟수</th><th>학부모</th><th class="dtbl-act"></th></tr></thead><tbody id="gd"></tbody></table>
+    <table class="dtbl" id="dtbl"><thead><tr><th class="dtbl-st"></th><th style="width:32px;text-align:center">No</th><th>이름</th><th>학년</th><th>상태</th><th>다음 예정</th><th>최종 상담</th><th>횟수</th><th>학부모</th><th class="dtbl-act"></th></tr></thead><tbody id="gd"></tbody></table>
     <div class="emp" id="em" style="display:none"><p>표시할 학생이 없습니다.</p></div>
   </div>
 </div>
@@ -361,7 +361,7 @@ function render(){
   list.sort(function(a,b){var sa=gSt(a),sb=gSt(b);return(ord[sa.st]||3)-(ord[sb.st]||3)||(sa.d||0)-(sb.d||0)});
   if(!list.length){gd.innerHTML='';em.style.display='block';return}
   em.style.display='none';
-  gd.innerHTML=list.map(function(s){
+  gd.innerHTML=list.map(function(s,idx){
     var nm=String(gV(s,'학생명')||s[Object.keys(s)[0]]||'—');
     var st=gSt(s);
     var grade=gV(s,'학년')||'';
@@ -374,6 +374,7 @@ function render(){
     var chipCls=st.st==='overdue'?'chip-err':st.st==='soon'?'chip-warn':st.st==='normal'?'chip-ok':'chip-neutral';
     return'<tr>'+
       '<td class="dtbl-st"><div class="st-bar" style="background:'+barColor+'"></div></td>'+
+      '<td style="text-align:center;font-size:10px;color:var(--t4)">'+(idx+1)+'</td>'+
       '<td class="nm-cell" onclick="oMod(\''+esc(nm)+'\')">'+esc(nm)+'</td>'+
       '<td><span class="sub-text">'+esc(grade)+(subj?' · '+esc(subj):'')+'</span></td>'+
       '<td><span class="chip '+chipCls+'">'+esc(st.dd||st.lb)+'</span></td>'+
