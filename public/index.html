@@ -195,7 +195,7 @@ button{cursor:pointer;border:none;background:none}
 </aside>
 <div class="mn">
 <header class="mh"><button class="mm" onclick="tSB()">☰</button><div class="tt" id="pT">대시보드</div>
-<div class="ac"><button class="btn bo bs" onclick="loadDash()">새로고침</button>
+<div class="ac"><button class="btn bo bs" onclick="reloadAll()">새로고침</button>
 <div style="display:flex;gap:8px;font-size:12px;color:var(--t4)"><span>대기 <b id="qW" style="color:var(--warn)">0</b></span><span>처리중 <b id="qP" style="color:var(--accent)">0</b></span></div></div></header>
 <div class="mc">
 
@@ -449,7 +449,7 @@ function resetSessionForm(){$('ssStudent').value='';$('briefResult').style.displ
 function toggleBLInput(){var s=$('ckBL'),i=$('ckBL_custom');if(s.value==='기타'){i.style.display='block';i.focus()}else{i.style.display='none';i.value=''}}
 
 // 3. Biweekly
-function loadBiweekly(){var nm=$('bwFilter').value;apiGet('cp_biweeklyList',{student:nm},function(r){if(r.success){var reps=r.reports||[];if(!reps.length){$('bwList').innerHTML='<div class="emp"><p>리포트가 없습니다.</p></div>';return}$('bwList').innerHTML=reps.map(rp=>'<div class="rpt-item"><div class="rpt-info"><div class="rpt-name">'+esc(rp.student)+' — '+esc(rp.consultDate||'')+'</div><div class="rpt-date">'+esc(rp.counselor||'')+'</div></div><div class="rpt-acts">'+(rp.shortCode?'<button class="btn bo bs" onclick="copyUrl(\''+esc(rp.shortCode)+'\')">복사</button>':'')+(rp.reportUrl?'<a href="'+esc(rp.reportUrl)+'" target="_blank" class="btn ba bs">열기</a>':'<span class="chip chip-neutral">URL 없음</span>')+'</div></div>').join('')}else $('bwList').innerHTML='<div class="emp"><p>'+esc(r.error)+'</p></div>'})}
+function loadBiweekly(){var nm=$('bwFilter').value;apiGet('cp_biweeklyList',{student:nm},function(r){if(r.success){var reps=r.reports||[];if(!reps.length){$('bwList').innerHTML='<div class="emp"><p>리포트가 없습니다.</p></div>';return}$('bwList').innerHTML=reps.map(rp=>'<div class="rpt-item"><div class="rpt-info"><div class="rpt-name">'+esc(rp.student)+' — '+esc(rp.consultDate||'')+'</div><div class="rpt-date">'+esc(rp.counselor||'')+' · '+esc(rp.consultId||'')+'</div></div><div class="rpt-acts">'+(rp.shortCode?'<button class="btn bo bs" onclick="copyUrl(\''+esc(rp.shortCode)+'\')">복사</button>':'')+(rp.reportUrl?'<a href="'+esc(rp.reportUrl)+'" target="_blank" class="btn ba bs">열기</a>':'<span class="chip chip-neutral">URL 없음</span>')+'<button class="btn br bs" onclick="deleteBiweekly(\''+esc(rp.consultId)+'\',\''+esc(rp.student)+'\')">삭제</button></div></div>').join('')}else $('bwList').innerHTML='<div class="emp"><p>'+esc(r.error)+'</p></div>'})}
 function viewReportsFor(nm){go('biweekly');$('bwFilter').value=nm;loadBiweekly()}
 
 // 4. Parent Report
@@ -466,6 +466,12 @@ function resetQueue(){if(!confirm('처리중 항목을 대기중으로 변경합
 function manualForceProcess(){if(!confirm('대기 항목을 서버에서 직접 처리합니다. (항목당 약 30초)'))return;sLd(true);toast('처리 시작... 완료될 때까지 기다려주세요.');apiPost('cp_forceProcess',{},function(r){sLd(false);if(r.success){toast(r.message,'to');loadQueueFull();loadQ()}else toast(r.error||'실패','te')})}
 function deleteQueueItem(taskId,name){if(!confirm(name+' 항목을 삭제합니다.'))return;apiPost('cp_deleteQueueItem',{taskId:taskId},function(r){if(r.success){toast('삭제 완료','to');loadQueueFull();loadQ()}else toast(r.error,'te')})}
 function clearQueue(){if(!confirm('대기열 전체를 삭제합니다. 계속?'))return;sLd(true);apiPost('cp_clearQueue',{},function(r){sLd(false);if(r.success){toast('전체 삭제 완료','to');loadQueueFull();loadQ()}else toast(r.error,'te')})}
+
+// Biweekly delete
+function deleteBiweekly(consultId,name){if(!confirm(name+' ('+consultId+') 리포트를 삭제합니다.\n[DB] 상담로그에서 해당 행이 삭제됩니다.\n계속?'))return;sLd(true);apiPost('cp_deleteBiweekly',{consultId:consultId},function(r){sLd(false);if(r.success){toast(r.message,'to');loadBiweekly()}else toast(r.error,'te')})}
+
+// Global reload — 헤더 새로고침 시 모든 데이터 다시 불러오기
+function reloadAll(){toast('데이터 갱신 중...');loadDash();loadQ();loadNames();var p=S.page;if(p==='biweekly')loadBiweekly();if(p==='parent-report')loadParentReports();if(p==='queue')loadQueueFull()}
 
 // URL copy
 function copyUrl(code){var url=code.startsWith('http')?code:'https://go.trueasheard.com/'+code;navigator.clipboard.writeText(url).then(()=>toast('URL 복사 완료','to')).catch(()=>prompt('URL:',url))}
