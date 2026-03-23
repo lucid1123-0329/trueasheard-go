@@ -199,14 +199,15 @@ button{cursor:pointer;border:none;background:none}
 
 <!-- 1. Dashboard -->
 <div class="pg on" id="pg-dashboard">
-  <div class="sts" style="margin-bottom:10px">
+  <div class="sts" style="margin-bottom:10px;grid-template-columns:repeat(5,1fr)">
     <div class="sc" style="padding:10px 12px"><div class="sl">전체</div><div class="sv" id="st0">—</div></div>
     <div class="sc" style="padding:10px 12px"><div class="sl">여유</div><div class="sv" id="st1">—</div></div>
-    <div class="sc" style="padding:10px 12px;border-left:2px solid var(--warn)"><div class="sl">임박</div><div class="sv" id="st2" style="color:var(--warn)">—</div></div>
+    <div class="sc" style="padding:10px 12px;border-left:2px solid var(--warn)"><div class="sl">임박 (D-1)</div><div class="sv" id="st2" style="color:var(--warn)">—</div></div>
     <div class="sc" style="padding:10px 12px;border-left:2px solid var(--err)"><div class="sl">지연</div><div class="sv" id="st3" style="color:var(--err)">—</div></div>
+    <div class="sc" style="padding:10px 12px"><div class="sl">미상담</div><div class="sv" id="st4" style="color:var(--t4)">—</div></div>
   </div>
   <div class="tb" style="margin-bottom:8px"><div class="sbox"><input type="text" id="sI" placeholder="학생 검색" oninput="render()"></div>
-  <div class="fg"><button class="fb on" data-f="all" onclick="setF('all')">전체</button><button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button><button class="fb" data-f="soon" onclick="setF('soon')">임박</button><button class="fb" data-f="normal" onclick="setF('normal')">여유</button></div></div>
+  <div class="fg"><button class="fb on" data-f="all" onclick="setF('all')">전체</button><button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button><button class="fb" data-f="soon" onclick="setF('soon')">임박</button><button class="fb" data-f="normal" onclick="setF('normal')">여유</button><button class="fb" data-f="none" onclick="setF('none')">미상담</button></div></div>
   <div class="panel" style="padding:0;overflow:hidden">
     <table class="dtbl" id="dtbl"><thead><tr><th class="dtbl-st"></th><th style="width:32px;text-align:center">No</th><th>이름</th><th>학년</th><th>과목</th><th>상태</th><th>다음 예정</th><th>최종 상담</th><th>횟수</th><th>학부모</th><th class="dtbl-act"></th></tr></thead><tbody id="gd"></tbody></table>
     <div class="emp" id="em" style="display:none"><p>표시할 학생이 없습니다.</p></div>
@@ -334,26 +335,26 @@ function populateSelects(){var opts=S.names.map(n=>'<option value="'+esc(n)+'">'
 function loadDash(){sLd(true);apiGet('cp_dashboard',{},function(r){sLd(false);if(r.success){S.students=r.students||[];calcSt();render()}else toast(r.error||'로드 실패','te')})}
 function gV(s,kw){var keys=Object.keys(s);var k=keys.find(function(k){return k.indexOf(kw)>-1});return k?s[k]:''}
 function gSt(s){
-  // 상담 횟수가 0이면 바로 신규
+  // 상담 횟수 0 → 미상담
   var cnt=String(gV(s,'상담 횟수')||gV(s,'상담횟수')||'0').trim();
-  if(cnt==='0'||cnt==='')return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
-  // D-N 상태값
+  if(cnt==='0'||cnt==='')return{st:'none',lb:'미상담',d:null,dd:'미상담'};
+  // D-N 상태값 (14일 주기 기준)
   var stVal=String(gV(s,'상담 상태')||gV(s,'상태')||'').trim();
   var dm=stVal.match(/D-?(\-?\d+)/i);
-  if(dm){var d=parseInt(dm[1]);if(d<=0)return{st:'overdue',lb:'D'+d+' 지연',d:d,dd:stVal};if(d<=3)return{st:'soon',lb:'D-'+d,d:d,dd:stVal};return{st:'normal',lb:'D-'+d,d:d,dd:stVal}}
-  // 날짜 기반 폴백
+  if(dm){var d=parseInt(dm[1]);if(d<=0)return{st:'overdue',lb:'D'+d+' 지연',d:d,dd:stVal};if(d<=1)return{st:'soon',lb:'D-'+d+' 임박',d:d,dd:stVal};return{st:'normal',lb:'D-'+d,d:d,dd:stVal}}
+  // 날짜 기반 폴백 (14일 주기)
   var ld=String(gV(s,'최종 상담일')||gV(s,'최종상담일')||gV(s,'최근상담일')||'').trim();
-  if(!ld||ld==='-'||ld==='0')return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
+  if(!ld||ld==='-'||ld==='0')return{st:'none',lb:'미상담',d:null,dd:'미상담'};
   var dt=new Date(ld.replace(/\.\s*/g,'-'));
-  if(isNaN(dt.getTime()))return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
+  if(isNaN(dt.getTime()))return{st:'none',lb:'미상담',d:null,dd:'미상담'};
   var diff=Math.floor((new Date()-dt)/864e5);
-  // 비정상적으로 큰 값(365일 초과)은 데이터 오류로 판단
-  if(diff>365)return{st:'new',lb:'기록 없음',d:null,dd:'기록 없음'};
-  if(diff>16)return{st:'overdue',lb:diff+'일 경과',d:-diff,dd:''};
-  if(diff>=12)return{st:'soon',lb:diff+'일 경과',d:14-diff,dd:''};
-  return{st:'normal',lb:'정상',d:14-diff,dd:''}
+  if(diff>365)return{st:'none',lb:'미상담',d:null,dd:'미상담'};
+  var remain=14-diff;
+  if(remain<=0)return{st:'overdue',lb:Math.abs(remain)+'일 초과',d:remain,dd:''};
+  if(remain<=1)return{st:'soon',lb:'D-'+remain+' 임박',d:remain,dd:''};
+  return{st:'normal',lb:'D-'+remain,d:remain,dd:''}
 }
-function calcSt(){var t=0,ok=0,sn=0,ov=0;S.students.forEach(s=>{t++;var x=gSt(s).st;if(x==='normal')ok++;else if(x==='soon')sn++;else if(x==='overdue')ov++});$('st0').textContent=t;$('st1').textContent=ok;$('st2').textContent=sn;$('st3').textContent=ov}
+function calcSt(){var t=0,ok=0,sn=0,ov=0,nn=0;S.students.forEach(s=>{t++;var x=gSt(s).st;if(x==='normal')ok++;else if(x==='soon')sn++;else if(x==='overdue')ov++;else if(x==='none')nn++});$('st0').textContent=t;$('st1').textContent=ok;$('st2').textContent=sn;$('st3').textContent=ov;$('st4').textContent=nn}
 // 과목 간략 파싱: "L-M [영어 - 상] / S1 [수학 - 상]" → "영어/수학"
 function parseSubjects(raw){
   if(!raw)return'';
@@ -371,7 +372,7 @@ function render(){
     if(S.filter==='all')return true;
     return gSt(s).st===S.filter
   });
-  var ord={overdue:0,soon:1,normal:2,'new':3};
+  var ord={overdue:0,soon:1,normal:2,none:3};
   list.sort(function(a,b){var sa=gSt(a),sb=gSt(b);return(ord[sa.st]||3)-(ord[sb.st]||3)||(sa.d||0)-(sb.d||0)});
   if(!list.length){gd.innerHTML='';em.style.display='block';return}
   em.style.display='none';
