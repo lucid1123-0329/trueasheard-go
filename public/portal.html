@@ -7,422 +7,353 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#f0f2f5;--sf:#fff;--bd:#e0e3e8;--bd2:#eef0f4;
-  --tx:#1a1d23;--tx2:#5f6775;--tx3:#9ba2ae;
-  --pri:#2563eb;--pri2:#eff4ff;--pri3:#1d4ed8;
-  --gn:#059669;--gn2:#ecfdf5;--or:#d97706;--or2:#fffbeb;
-  --rd:#dc2626;--rd2:#fef2f2;--pu:#7c3aed;--pu2:#f5f3ff;
-  --r:10px;--r2:14px;--sh:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.03);
-  --font:'Noto Sans KR',-apple-system,sans-serif;
-  --sbw:220px;--hh:56px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:14px}
+:root{--bg:#f0f2f5;--sf:#fff;--bd:#e0e3e8;--bd2:#eef0f4;--tx:#1a1d23;--tx2:#5f6775;--tx3:#9ba2ae;--pri:#2563eb;--pri2:#eff4ff;--pri3:#1d4ed8;--gn:#059669;--gn2:#ecfdf5;--or:#d97706;--or2:#fffbeb;--rd:#dc2626;--rd2:#fef2f2;--pu:#7c3aed;--pu2:#f5f3ff;--r:10px;--r2:14px;--sh:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.03);--font:'Noto Sans KR',-apple-system,sans-serif;--sbw:220px;--hh:56px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:14px}
 body{font-family:var(--font);color:var(--tx);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
-input,button,select,textarea{font-family:inherit}
-button{cursor:pointer;border:none;background:none}
-
-/* ─── 로그인 ─── */
+input,button,select,textarea{font-family:inherit}button{cursor:pointer;border:none;background:none}
 #loginWrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#0f172a,#1e293b)}
 #loginWrap.hide{display:none}
 .lc{background:#fff;border-radius:18px;padding:44px 36px;width:100%;max-width:380px;box-shadow:0 16px 50px rgba(0,0,0,.22)}
 .lc .logo{text-align:center;margin-bottom:28px}
 .lc .logo-i{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--pri),#6366f1);font-size:26px;color:#fff;margin-bottom:12px}
-.lc h1{font-size:1.35rem;font-weight:700}
-.lc .sub{color:var(--tx2);font-size:.85rem;margin-top:3px}
+.lc h1{font-size:1.35rem;font-weight:700}.lc .sub{color:var(--tx2);font-size:.85rem;margin-top:3px}
 .lerr{background:var(--rd2);color:var(--rd);padding:9px 13px;border-radius:8px;font-size:.82rem;margin-bottom:14px;display:none}
-.fld{margin-bottom:14px}
-.fld label{display:block;font-size:.8rem;font-weight:600;color:var(--tx2);margin-bottom:5px}
-.fld input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.92rem;background:var(--bg);transition:border-color .2s}
-.fld input:focus{outline:none;border-color:var(--pri);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.fld{margin-bottom:14px}.fld label{display:block;font-size:.8rem;font-weight:600;color:var(--tx2);margin-bottom:5px}
+.fld input,.fld select,.fld textarea{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.92rem;background:var(--bg);transition:border-color .2s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--pri);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.fld textarea{resize:vertical;min-height:70px}
 .lbtn{width:100%;padding:12px;margin-top:6px;background:linear-gradient(135deg,var(--pri),#4f46e5);color:#fff;font-size:.92rem;font-weight:600;border-radius:var(--r);transition:all .2s}
-.lbtn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,99,235,.3)}
-.lbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
-
-/* ─── 앱 ─── */
-#app{display:none;min-height:100vh}
-#app.on{display:flex}
-
+.lbtn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,99,235,.3)}.lbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+#app{display:none;min-height:100vh}#app.on{display:flex}
 .sb{width:var(--sbw);background:#0f172a;color:#e2e8f0;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s}
-.sb-hd{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
-.sb-hd h2{font-size:1rem;font-weight:700;color:#fff}
-.sb-hd span{font-size:.7rem;color:#94a3b8}
+.sb-hd{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}.sb-hd h2{font-size:1rem;font-weight:700;color:#fff}.sb-hd span{font-size:.7rem;color:#94a3b8}
 .sb-nv{flex:1;padding:10px 8px;overflow-y:auto}
 .sb-lb{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#64748b;padding:10px 10px 4px}
 .ni{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;font-size:.84rem;color:#cbd5e1;transition:all .15s;margin-bottom:1px}
-.ni:hover{background:rgba(255,255,255,.06);color:#fff}
-.ni.on{background:rgba(37,99,235,.2);color:#93bbfd;font-weight:500}
-.ni .ic{width:20px;text-align:center;font-size:1rem}
-.ni .bdg{margin-left:auto;background:var(--rd);color:#fff;font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:8px}
+.ni:hover{background:rgba(255,255,255,.06);color:#fff}.ni.on{background:rgba(37,99,235,.2);color:#93bbfd;font-weight:500}
+.ni .ic{width:20px;text-align:center;font-size:1rem}.ni .bdg{margin-left:auto;background:var(--rd);color:#fff;font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:8px}
 .sb-ft{padding:14px 16px;border-top:1px solid rgba(255,255,255,.07)}
 .sb-ft .ur{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .sb-ft .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff}
-.sb-ft .un{font-size:.82rem;color:#e2e8f0}
-.sb-ft .uro{font-size:.68rem;color:#94a3b8}
-.lo-btn{font-size:.78rem;color:#94a3b8;padding:4px 0;transition:color .15s}
-.lo-btn:hover{color:#f87171}
-
+.sb-ft .un{font-size:.82rem;color:#e2e8f0}.sb-ft .uro{font-size:.68rem;color:#94a3b8}
+.lo-btn{font-size:.78rem;color:#94a3b8;padding:4px 0;transition:color .15s}.lo-btn:hover{color:#f87171}
 .mn{flex:1;margin-left:var(--sbw);min-height:100vh}
 .mh{height:var(--hh);background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 22px;position:sticky;top:0;z-index:50}
-.mh .tt{font-size:1.05rem;font-weight:600}
-.mh .ac{margin-left:auto;display:flex;align-items:center;gap:8px}
+.mh .tt{font-size:1.05rem;font-weight:600}.mh .ac{margin-left:auto;display:flex;align-items:center;gap:8px}
 .mm{display:none;font-size:1.3rem;margin-right:10px;color:var(--tx)}
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;font-size:.82rem;font-weight:500;transition:all .15s}
 .bp{background:var(--pri);color:#fff}.bp:hover{background:var(--pri3)}
 .bo{border:1.5px solid var(--bd);color:var(--tx2);background:var(--sf)}.bo:hover{border-color:var(--pri);color:var(--pri)}
-.bs{padding:5px 10px;font-size:.78rem}
-.mc{padding:20px 22px}
-
+.bg{background:var(--gn);color:#fff}.bg:hover{background:#047857}
+.br{background:var(--rd);color:#fff}.br:hover{background:#b91c1c}
+.bor{background:var(--or);color:#fff}.bor:hover{background:#b45309}
+.bs{padding:5px 10px;font-size:.78rem}.mc{padding:20px 22px}
 /* 통계 */
 .sts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .sc{background:var(--sf);border-radius:var(--r2);padding:16px;border:1px solid var(--bd2)}
-.sc .sl{font-size:.72rem;color:var(--tx3);font-weight:500;margin-bottom:6px}
-.sc .sv{font-size:1.6rem;font-weight:700;line-height:1.1}
-.sc .ss{font-size:.72rem;color:var(--tx2);margin-top:4px}
-
+.sc .sl{font-size:.72rem;color:var(--tx3);font-weight:500;margin-bottom:6px}.sc .sv{font-size:1.6rem;font-weight:700;line-height:1.1}.sc .ss{font-size:.72rem;color:var(--tx2);margin-top:4px}
 /* 알림 */
 .ap{background:var(--sf);border-radius:var(--r2);border:1px solid var(--bd2);padding:16px;margin-bottom:20px}
 .ap h3{font-size:.92rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.si{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd2)}
-.si:last-child{border-bottom:none}
-.sd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.si .nm{font-weight:500;font-size:.84rem}
-.si .dt{font-size:.76rem;color:var(--tx3);margin-left:auto}
-
+.si{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd2)}.si:last-child{border-bottom:none}
+.sd{width:7px;height:7px;border-radius:50%;flex-shrink:0}.si .nm{font-weight:500;font-size:.84rem}.si .dt{font-size:.76rem;color:var(--tx3);margin-left:auto}
 /* 필터 */
 .tb{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .sbox{display:flex;align-items:center;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);padding:0 10px;flex:1;max-width:280px}
-.sbox:focus-within{border-color:var(--pri)}
-.sbox input{border:none;background:none;padding:8px 0 8px 6px;font-size:.84rem;flex:1;outline:none}
+.sbox:focus-within{border-color:var(--pri)}.sbox input{border:none;background:none;padding:8px 0 8px 6px;font-size:.84rem;flex:1;outline:none}
 .fg{display:flex;gap:3px;background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);padding:2px}
-.fb{padding:5px 12px;border-radius:6px;font-size:.78rem;font-weight:500;color:var(--tx2);transition:all .15s}
-.fb.on{background:var(--pri);color:#fff}
-.fb:hover:not(.on){background:var(--bg)}
-
-/* 카드 그리드 */
+.fb{padding:5px 12px;border-radius:6px;font-size:.78rem;font-weight:500;color:var(--tx2);transition:all .15s}.fb.on{background:var(--pri);color:#fff}.fb:hover:not(.on){background:var(--bg)}
+/* 카드 */
 .gd{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
 .cd{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r2);padding:16px;transition:all .15s;cursor:pointer}
 .cd:hover{border-color:var(--pri);box-shadow:var(--sh);transform:translateY(-1px)}
 .cd .ch{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .cd .cav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;color:#fff;flex-shrink:0}
-.cd .cn{font-size:.95rem;font-weight:600}
-.cd .cm{font-size:.72rem;color:var(--tx3)}
+.cd .cn{font-size:.95rem;font-weight:600}.cd .cm{font-size:.72rem;color:var(--tx3)}
 .bds{margin-left:auto;padding:3px 9px;border-radius:16px;font-size:.68rem;font-weight:600}
 .sn{background:var(--gn2);color:var(--gn)}.ss2{background:var(--or2);color:var(--or)}.so{background:var(--rd2);color:var(--rd)}.snw{background:var(--pu2);color:var(--pu)}
-.cd .cb{font-size:.8rem}
-.cd .ir{display:flex;justify-content:space-between;padding:4px 0;color:var(--tx2)}
+.cd .cb{font-size:.8rem}.cd .ir{display:flex;justify-content:space-between;padding:4px 0;color:var(--tx2)}
 .cd .ir .l{color:var(--tx3)}.cd .ir .v{font-weight:500;color:var(--tx)}
-.cd .ca{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd2)}
-.cd .ca .btn{flex:1;justify-content:center}
-
-.qm{display:flex;gap:12px}.qs{display:flex;align-items:center;gap:4px;font-size:.78rem}
-.qd{width:6px;height:6px;border-radius:50%}
-
+.cd .ca{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd2)}.cd .ca .btn{flex:1;justify-content:center}
+.qm{display:flex;gap:12px}.qs{display:flex;align-items:center;gap:4px;font-size:.78rem}.qd{width:6px;height:6px;border-radius:50%}
 .pg{display:none}.pg.on{display:block}
 .emp{text-align:center;padding:50px 16px;color:var(--tx3)}.emp .eic{font-size:2.5rem;margin-bottom:10px}
-
+/* 패널 공통 */
+.panel{background:var(--sf);border-radius:var(--r2);border:1px solid var(--bd2);padding:20px;margin-bottom:16px}
+.panel h3{font-size:.95rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.panel p{font-size:.84rem;color:var(--tx2);line-height:1.7}
+/* 리포트 리스트 */
+.rpt-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd2);font-size:.84rem}
+.rpt-item:last-child{border-bottom:none}
+.rpt-item .rpt-info{flex:1}.rpt-item .rpt-name{font-weight:600}.rpt-item .rpt-date{color:var(--tx3);font-size:.76rem}
+.rpt-item .rpt-acts{display:flex;gap:6px}
+/* 대기열 아이템 */
+.q-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd2);font-size:.84rem}
+.q-item:last-child{border-bottom:none}
+.q-item .q-info{flex:1}.q-item .q-name{font-weight:600}.q-item .q-meta{color:var(--tx3);font-size:.76rem}
+.q-badge{padding:3px 8px;border-radius:12px;font-size:.72rem;font-weight:600}
+.q-waiting{background:var(--or2);color:var(--or)}.q-processing{background:var(--pri2);color:var(--pri)}.q-done{background:var(--gn2);color:var(--gn)}.q-error{background:var(--rd2);color:var(--rd)}
+/* 상담 세션 스텝 */
+.step-bar{display:flex;gap:4px;margin-bottom:20px}
+.step-dot{flex:1;height:4px;border-radius:2px;background:var(--bd)}.step-dot.done{background:var(--pri)}.step-dot.cur{background:var(--or)}
+.step-content{display:none}.step-content.on{display:block}
+/* 체크리스트 라디오 그룹 */
+.ck-group{margin-bottom:16px}.ck-group label.ck-title{font-size:.85rem;font-weight:600;color:var(--tx);margin-bottom:8px;display:block}
+.ck-options{display:flex;gap:6px;flex-wrap:wrap}
+.ck-opt{padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;font-size:.8rem;color:var(--tx2);cursor:pointer;transition:all .15s}
+.ck-opt:hover{border-color:var(--pri);color:var(--pri)}.ck-opt.sel{background:var(--pri);color:#fff;border-color:var(--pri)}
 /* 모달 */
 .mbg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:500;align-items:center;justify-content:center;padding:16px}
-.mbg.on{display:flex}
-.mdl{background:var(--sf);border-radius:var(--r2);box-shadow:0 10px 40px rgba(0,0,0,.15);max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:24px}
+.mbg.on{display:flex}.mdl{background:var(--sf);border-radius:var(--r2);box-shadow:0 10px 40px rgba(0,0,0,.15);max-width:560px;width:100%;max-height:85vh;overflow-y:auto;padding:24px}
 .mdl h3{font-size:1.05rem;font-weight:600;margin-bottom:16px}
 .mac{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:14px;border-top:1px solid var(--bd2)}
-
+/* 유틸 */
 .tc{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:6px}
 .tst{background:var(--tx);color:#fff;padding:10px 18px;border-radius:var(--r);font-size:.82rem;box-shadow:var(--sh);animation:ti .25s ease;max-width:300px}
-.tst.te{background:var(--rd)}.tst.to{background:var(--gn)}
-@keyframes ti{from{opacity:0;transform:translateY(8px)}}
-
+.tst.te{background:var(--rd)}.tst.to{background:var(--gn)}@keyframes ti{from{opacity:0;transform:translateY(8px)}}
 .ld{position:fixed;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;z-index:998}
-.sp{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--pri);border-radius:50%;animation:spn .7s linear infinite}
-@keyframes spn{to{transform:rotate(360deg)}}
-
-@media(max-width:768px){
-  .sb{transform:translateX(-260px);width:260px}.sb.open{transform:translateX(0)}
-  .mm{display:block}
-  .mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:99}.mov.open{display:block}
-  .mn{margin-left:0}.sts{grid-template-columns:1fr 1fr}.gd{grid-template-columns:1fr}
-  .mc{padding:14px}.mh{padding:0 14px}.tb{flex-direction:column;align-items:stretch}.sbox{max-width:100%}
-  .lc{padding:32px 24px}
-}
+.sp{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--pri);border-radius:50%;animation:spn .7s linear infinite}@keyframes spn{to{transform:rotate(360deg)}}
+.ir{display:flex;justify-content:space-between;padding:4px 0;color:var(--tx2)}.ir .l{color:var(--tx3)}.ir .v{font-weight:500;color:var(--tx)}
+@media(max-width:768px){.sb{transform:translateX(-260px);width:260px}.sb.open{transform:translateX(0)}.mm{display:block}.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:99}.mov.open{display:block}.mn{margin-left:0}.sts{grid-template-columns:1fr 1fr}.gd{grid-template-columns:1fr}.mc{padding:14px}.mh{padding:0 14px}.tb{flex-direction:column;align-items:stretch}.sbox{max-width:100%}.lc{padding:32px 24px}}
 </style>
 </head>
 <body>
-
+<!-- 로그인 -->
 <div id="loginWrap">
-  <div class="lc">
-    <div class="logo">
-      <div class="logo-i">🩺</div>
-      <h1>상담 관리 포털</h1>
-      <p class="sub">명불허전학원 — 통합 상담 시스템</p>
-    </div>
-    <div class="lerr" id="lerr"></div>
-    <div class="fld"><label>이름</label><input type="text" id="iu" placeholder="강사/상담자 이름" autocomplete="off"></div>
-    <div class="fld"><label>비밀번호</label><input type="password" id="ip" placeholder="비밀번호"></div>
-    <button class="lbtn" id="lbtn" onclick="doLogin()">로그인</button>
-  </div>
+  <div class="lc"><div class="logo"><div class="logo-i">🩺</div><h1>상담 관리 포털</h1><p class="sub">명불허전학원 — 통합 상담 시스템</p></div>
+  <div class="lerr" id="lerr"></div>
+  <div class="fld"><label>이름</label><input type="text" id="iu" placeholder="강사/상담자 이름" autocomplete="off"></div>
+  <div class="fld"><label>비밀번호</label><input type="password" id="ip" placeholder="비밀번호"></div>
+  <button class="lbtn" id="lbtn" onclick="doLogin()">로그인</button></div>
 </div>
-
+<!-- 앱 -->
 <div id="app">
-  <div class="mov" id="mov" onclick="tSB()"></div>
-  <aside class="sb" id="sb">
-    <div class="sb-hd"><h2>🩺 상담 관리</h2><span>명불허전학원</span></div>
-    <nav class="sb-nv">
-      <div class="sb-lb">메인</div>
-      <button class="ni on" data-p="dashboard" onclick="go('dashboard')"><span class="ic">📊</span> 대시보드</button>
-      <div class="sb-lb">2주 학생 상담</div>
-      <button class="ni" data-p="session" onclick="go('session')"><span class="ic">🩺</span> 상담 시작</button>
-      <button class="ni" data-p="biweekly" onclick="go('biweekly')"><span class="ic">📄</span> 2주 리포트</button>
-      <div class="sb-lb">학부모 상담</div>
-      <button class="ni" data-p="parent-report" onclick="go('parent-report')"><span class="ic">📋</span> 학부모 리포트</button>
-      <button class="ni" data-p="parent-consult" onclick="go('parent-consult')"><span class="ic">✏️</span> 상담 기록</button>
-      <div class="sb-lb">시스템</div>
-      <button class="ni" data-p="queue" onclick="go('queue')"><span class="ic">⚙️</span> 대기열<span class="bdg" id="qB" style="display:none">0</span></button>
-    </nav>
-    <div class="sb-ft">
-      <div class="ur"><div class="av" id="uA">?</div><div><div class="un" id="uN">—</div><div class="uro" id="uR">—</div></div></div>
-      <button class="lo-btn" onclick="doLogout()">↩ 로그아웃</button>
-    </div>
-  </aside>
+<div class="mov" id="mov" onclick="tSB()"></div>
+<aside class="sb" id="sb">
+  <div class="sb-hd"><h2>🩺 상담 관리</h2><span>명불허전학원</span></div>
+  <nav class="sb-nv">
+    <div class="sb-lb">메인</div>
+    <button class="ni on" data-p="dashboard" onclick="go('dashboard')"><span class="ic">📊</span> 대시보드</button>
+    <div class="sb-lb">2주 학생 상담</div>
+    <button class="ni" data-p="session" onclick="go('session')"><span class="ic">🩺</span> 상담 시작</button>
+    <button class="ni" data-p="biweekly" onclick="go('biweekly')"><span class="ic">📄</span> 2주 리포트</button>
+    <div class="sb-lb">학부모 상담</div>
+    <button class="ni" data-p="parent-report" onclick="go('parent-report')"><span class="ic">📋</span> 학부모 리포트</button>
+    <button class="ni" data-p="parent-consult" onclick="go('parent-consult')"><span class="ic">✏️</span> 상담 기록</button>
+    <div class="sb-lb">시스템</div>
+    <button class="ni" data-p="queue" onclick="go('queue')"><span class="ic">⚙️</span> 대기열<span class="bdg" id="qB" style="display:none">0</span></button>
+  </nav>
+  <div class="sb-ft"><div class="ur"><div class="av" id="uA">?</div><div><div class="un" id="uN">—</div><div class="uro" id="uR">—</div></div></div><button class="lo-btn" onclick="doLogout()">↩ 로그아웃</button></div>
+</aside>
+<div class="mn">
+<header class="mh"><button class="mm" onclick="tSB()">☰</button><div class="tt" id="pT">대시보드</div>
+<div class="ac"><button class="btn bo bs" onclick="loadDash()">↻ 새로고침</button>
+<div class="qm"><div class="qs"><span class="qd" style="background:var(--or)"></span> 대기 <b id="qW">0</b></div><div class="qs"><span class="qd" style="background:var(--pri)"></span> 처리중 <b id="qP">0</b></div></div></div></header>
+<div class="mc">
 
-  <div class="mn">
-    <header class="mh">
-      <button class="mm" onclick="tSB()">☰</button>
-      <div class="tt" id="pT">대시보드</div>
-      <div class="ac">
-        <button class="btn bo bs" onclick="loadDash()">↻ 새로고침</button>
-        <div class="qm" id="qM">
-          <div class="qs"><span class="qd" style="background:var(--or)"></span> 대기 <b id="qW">0</b></div>
-          <div class="qs"><span class="qd" style="background:var(--pri)"></span> 처리중 <b id="qP">0</b></div>
-        </div>
+<!-- ===== 1. 대시보드 ===== -->
+<div class="pg on" id="pg-dashboard">
+  <div class="sts">
+    <div class="sc"><div class="sl">👥 전체 학생</div><div class="sv" id="st0">—</div></div>
+    <div class="sc"><div class="sl">✅ 상담 완료</div><div class="sv" id="st1">—</div></div>
+    <div class="sc"><div class="sl">⏰ 상담 예정</div><div class="sv" id="st2">—</div><div class="ss">12~16일 경과</div></div>
+    <div class="sc"><div class="sl">⚠️ 상담 지연</div><div class="sv" id="st3">—</div><div class="ss">16일 이상</div></div>
+  </div>
+  <div class="ap" id="aP" style="display:none"><h3>📅 곧 상담이 필요한 학생</h3><div id="aL"></div></div>
+  <div class="tb"><div class="sbox"><span>🔍</span><input type="text" id="sI" placeholder="학생 이름 검색..." oninput="render()"></div>
+  <div class="fg"><button class="fb on" data-f="all" onclick="setF('all')">전체</button><button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button><button class="fb" data-f="soon" onclick="setF('soon')">예정</button><button class="fb" data-f="normal" onclick="setF('normal')">정상</button></div></div>
+  <div class="gd" id="gd"></div>
+  <div class="emp" id="em" style="display:none"><div class="eic">📋</div><p>표시할 학생이 없습니다.</p></div>
+</div>
+
+<!-- ===== 2. 상담 세션 ===== -->
+<div class="pg" id="pg-session">
+  <div class="panel">
+    <h3>🩺 2주 학생 상담 세션</h3>
+    <div class="fld"><label>학생 선택</label>
+      <select id="ssStudent" onchange="onSessionStudentChange()"><option value="">— 학생을 선택하세요 —</option></select>
+    </div>
+    <!-- 스텝 바 -->
+    <div class="step-bar" id="stepBar"><div class="step-dot cur" id="sd0"></div><div class="step-dot" id="sd1"></div><div class="step-dot" id="sd2"></div><div class="step-dot" id="sd3"></div></div>
+    <!-- Step 0: AI 브리핑 -->
+    <div class="step-content on" id="stp0">
+      <div class="panel" style="background:var(--pri2);border-color:#c7d9fd">
+        <h3>🤖 AI 사전 브리핑</h3>
+        <p id="briefingText" style="white-space:pre-wrap">학생을 선택하면 AI 브리핑이 생성됩니다.</p>
       </div>
-    </header>
-    <div class="mc">
-      <div class="pg on" id="pg-dashboard">
-        <div class="sts">
-          <div class="sc"><div class="sl">👥 전체 학생</div><div class="sv" id="st0">—</div></div>
-          <div class="sc"><div class="sl">✅ 상담 완료</div><div class="sv" id="st1">—</div></div>
-          <div class="sc"><div class="sl">⏰ 상담 예정</div><div class="sv" id="st2">—</div><div class="ss">12~16일 경과</div></div>
-          <div class="sc"><div class="sl">⚠️ 상담 지연</div><div class="sv" id="st3">—</div><div class="ss">16일 이상</div></div>
-        </div>
-        <div class="ap" id="aP" style="display:none"><h3>📅 곧 상담이 필요한 학생</h3><div id="aL"></div></div>
-        <div class="tb">
-          <div class="sbox"><span>🔍</span><input type="text" id="sI" placeholder="학생 이름 검색..." oninput="render()"></div>
-          <div class="fg">
-            <button class="fb on" data-f="all" onclick="setF('all')">전체</button>
-            <button class="fb" data-f="overdue" onclick="setF('overdue')">지연</button>
-            <button class="fb" data-f="soon" onclick="setF('soon')">예정</button>
-            <button class="fb" data-f="normal" onclick="setF('normal')">정상</button>
-          </div>
-        </div>
-        <div class="gd" id="gd"></div>
-        <div class="emp" id="em" style="display:none"><div class="eic">📋</div><p>표시할 학생이 없습니다.</p></div>
+      <button class="btn bp" onclick="goStep(1)" id="btnStep1" disabled>다음: 체크리스트 →</button>
+    </div>
+    <!-- Step 1: 체크리스트 -->
+    <div class="step-content" id="stp1">
+      <div class="ck-group"><label class="ck-title">SA — 자기진단 (학생 스스로 평가)</label>
+        <div class="ck-options" data-ck="SA"><div class="ck-opt" onclick="selCk(this)">매우 잘함</div><div class="ck-opt" onclick="selCk(this)">대체로 잘함</div><div class="ck-opt" onclick="selCk(this)">보통</div><div class="ck-opt" onclick="selCk(this)">노력 부족</div></div></div>
+      <div class="ck-group"><label class="ck-title">OB — 관찰 (상담자 관찰 평가)</label>
+        <div class="ck-options" data-ck="OB"><div class="ck-opt" onclick="selCk(this)">매우 잘함</div><div class="ck-opt" onclick="selCk(this)">대체로 잘함</div><div class="ck-opt" onclick="selCk(this)">보통</div><div class="ck-opt" onclick="selCk(this)">노력 부족</div></div></div>
+      <div class="ck-group"><label class="ck-title">BL — 저해요인</label>
+        <div class="fld" style="margin:0"><textarea id="ckBL" placeholder="학습 저해요인을 기록하세요..."></textarea></div></div>
+      <div class="ck-group"><label class="ck-title">PF — 이행평가 (이전 목표 달성도)</label>
+        <div class="ck-options" data-ck="PF"><div class="ck-opt" onclick="selCk(this)">100% 달성</div><div class="ck-opt" onclick="selCk(this)">대체로 잘함</div><div class="ck-opt" onclick="selCk(this)">보통</div><div class="ck-opt" onclick="selCk(this)">미이행</div></div></div>
+      <div style="display:flex;gap:8px"><button class="btn bo" onclick="goStep(0)">← 이전</button><button class="btn bp" onclick="goStep(2)">다음: 목표 설정 →</button></div>
+    </div>
+    <!-- Step 2: 목표 설정 -->
+    <div class="step-content" id="stp2">
+      <div class="fld"><label>다음 2주 학습 목표</label><textarea id="ssGoal" rows="4" placeholder="구체적인 목표를 입력하세요...&#10;예: 수학 집중 + 영어 단어 매일 30개 암기"></textarea></div>
+      <div class="fld"><label>상담 유형</label>
+        <select id="ssType"><option value="정기">정기 (2주)</option><option value="추가">추가 상담</option><option value="긴급">긴급</option></select></div>
+      <div style="display:flex;gap:8px"><button class="btn bo" onclick="goStep(1)">← 이전</button><button class="btn bp" onclick="goStep(3)">다음: 확인 →</button></div>
+    </div>
+    <!-- Step 3: 확인 & 저장 -->
+    <div class="step-content" id="stp3">
+      <div class="panel" style="background:#fefce8;border-color:#fde68a">
+        <h3>📋 상담 내용 확인</h3>
+        <div id="sessionSummary"></div>
       </div>
-      <div class="pg" id="pg-session"><div class="emp"><div class="eic">🩺</div><p>2주 학생 상담 — 다음 단계에서 구현됩니다.</p></div></div>
-      <div class="pg" id="pg-biweekly"><div class="emp"><div class="eic">📄</div><p>2주 리포트 관리 — 다음 단계에서 구현됩니다.</p></div></div>
-      <div class="pg" id="pg-parent-report"><div class="emp"><div class="eic">📋</div><p>학부모 리포트 — 다음 단계에서 구현됩니다.</p></div></div>
-      <div class="pg" id="pg-parent-consult"><div class="emp"><div class="eic">✏️</div><p>학부모 상담 기록 — 다음 단계에서 구현됩니다.</p></div></div>
-      <div class="pg" id="pg-queue"><div class="emp"><div class="eic">⚙️</div><p>대기열 관리 — 다음 단계에서 구현됩니다.</p></div></div>
+      <div style="display:flex;gap:8px"><button class="btn bo" onclick="goStep(2)">← 수정</button><button class="btn bg" onclick="saveSession()" id="btnSaveSession">✅ 상담 완료 → 대기열 저장</button></div>
     </div>
   </div>
 </div>
 
+<!-- ===== 3. 2주 리포트 ===== -->
+<div class="pg" id="pg-biweekly">
+  <div class="panel">
+    <h3>📄 2주 상담 리포트 목록</h3>
+    <div class="fld"><label>학생 필터</label>
+      <select id="bwFilter" onchange="loadBiweekly()"><option value="">전체 학생</option></select></div>
+    <div id="bwList"><div class="emp"><div class="eic">📄</div><p>로딩 중...</p></div></div>
+  </div>
+</div>
+
+<!-- ===== 4. 학부모 리포트 ===== -->
+<div class="pg" id="pg-parent-report">
+  <div class="panel">
+    <h3>📋 학부모 리포트 목록</h3>
+    <div class="tb" style="margin-bottom:12px">
+      <div class="fld" style="flex:1;margin:0"><select id="prFilter" onchange="loadParentReports()"><option value="">전체 학생</option></select></div>
+      <button class="btn bp bs" onclick="generateNewReport()">📊 새 리포트 생성</button>
+    </div>
+    <div id="prList"><div class="emp"><div class="eic">📋</div><p>로딩 중...</p></div></div>
+  </div>
+</div>
+
+<!-- ===== 5. 학부모 상담 기록 ===== -->
+<div class="pg" id="pg-parent-consult">
+  <div class="panel">
+    <h3>✏️ 학부모 상담 기록</h3>
+    <div class="fld"><label>학생</label><select id="pcStudent" onchange="loadParentHistory()"><option value="">— 학생 선택 —</option></select></div>
+    <div class="fld"><label>상담 방법</label>
+      <select id="pcMethod"><option value="전화">전화</option><option value="대면">대면</option><option value="온라인">온라인</option></select></div>
+    <div class="fld"><label>상담 요약</label><textarea id="pcSummary" placeholder="상담 내용을 요약해주세요..."></textarea></div>
+    <div class="fld"><label>학부모 요청사항</label><textarea id="pcRequest" placeholder="학부모 주요 요청..."></textarea></div>
+    <div class="fld"><label>조치 사항</label><textarea id="pcAction" placeholder="학원 측 조치 사항..."></textarea></div>
+    <div class="fld"><label>다음 단계</label><input type="text" id="pcNext" placeholder="다음 상담 예정 등..."></div>
+    <button class="btn bg" onclick="saveParentConsult()" id="btnSavePC">💾 상담 기록 저장</button>
+  </div>
+  <div class="panel" id="pcHistPanel" style="display:none">
+    <h3>📜 이전 상담 이력</h3>
+    <div id="pcHistList"></div>
+  </div>
+</div>
+
+<!-- ===== 6. 대기열 ===== -->
+<div class="pg" id="pg-queue">
+  <div class="sts" style="grid-template-columns:repeat(4,1fr)">
+    <div class="sc"><div class="sl">⏳ 대기중</div><div class="sv" id="qqW">0</div></div>
+    <div class="sc"><div class="sl">🔄 처리중</div><div class="sv" id="qqP">0</div></div>
+    <div class="sc"><div class="sl">✅ 완료</div><div class="sv" id="qqD">0</div></div>
+    <div class="sc"><div class="sl">❌ 에러</div><div class="sv" id="qqE">0</div></div>
+  </div>
+  <div class="tb">
+    <button class="btn bor bs" onclick="resetQueue()">🔄 멈춤 해제 (처리중→대기중)</button>
+    <button class="btn br bs" onclick="forceProcess()">⚡ 강제 일괄 처리</button>
+    <button class="btn bo bs" onclick="loadQueueFull()">↻ 새로고침</button>
+  </div>
+  <div class="panel">
+    <h3>📋 대기열 항목</h3>
+    <div id="qList"><div class="emp"><div class="eic">⚙️</div><p>로딩 중...</p></div></div>
+  </div>
+</div>
+
+</div></div></div>
+
+<!-- 모달 -->
 <div class="mbg" id="modal"><div class="mdl"><h3 id="mT">학생 상세</h3><div id="mB"></div><div class="mac"><button class="btn bo" onclick="cMod()">닫기</button><button class="btn bp" id="mA">🩺 상담 시작</button></div></div></div>
 <div class="tc" id="tC"></div>
 <div class="ld" id="ld" style="display:none"><div class="sp"></div></div>
 
 <script>
-var API = 'https://script.google.com/macros/s/AKfycbz0HcYFu1zEAe7NjEmf3mT7oC2o6ZL84AxzQXryAwVX5gC5i7FBljeWdaUPVNx86Ct2/exec';
+var API='/api/proxy';
+var S={user:'',role:'',students:[],names:[],filter:'all',page:'dashboard',sessionStep:0};
 
-var S = { user:'', role:'', students:[], filter:'all', page:'dashboard' };
+document.getElementById('ip').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+document.getElementById('iu').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('ip').focus()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')cMod()});
 
-document.getElementById('ip').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
-document.getElementById('iu').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('ip').focus(); });
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') cMod(); });
+function apiGet(a,p,cb){var qs=new URLSearchParams(Object.assign({action:a},p||{}));fetch(API+'?'+qs).then(r=>r.json()).then(cb).catch(e=>cb({success:false,error:e.message}))}
+function apiPost(a,b,cb){fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:a},b||{}))}).then(r=>r.json()).then(cb).catch(e=>cb({success:false,error:e.message}))}
 
-// ─── fetch 래퍼 ─────────────────────────────────────────────
-function apiGet(action, params, cb) {
-  var qs = new URLSearchParams(Object.assign({ action: action }, params || {}));
-  fetch(API + '?' + qs.toString())
-    .then(function(r){ return r.json(); })
-    .then(cb)
-    .catch(function(e){ cb({ success:false, error:e.message }); });
-}
-function apiPost(action, body, cb) {
-  fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(Object.assign({ action: action }, body || {}))
-  })
-    .then(function(r){ return r.json(); })
-    .then(cb)
-    .catch(function(e){ cb({ success:false, error:e.message }); });
-}
+// ─── 로그인 ───
+function doLogin(){var u=$('iu').value.trim(),p=$('ip').value.trim(),btn=$('lbtn');if(!u||!p){sErr('이름과 비밀번호를 입력해주세요.');return}btn.disabled=true;btn.textContent='로그인 중...';$('lerr').style.display='none';apiPost('cp_login',{user:u,pass:p},function(r){btn.disabled=false;btn.textContent='로그인';if(r.success){S.user=r.user;S.role=r.role;enterApp()}else sErr(r.error||'로그인 실패')})}
+function sErr(m){var e=$('lerr');e.textContent=m;e.style.display='block'}
+function doLogout(){S.user='';S.role='';$('app').classList.remove('on');$('loginWrap').classList.remove('hide');$('iu').value='';$('ip').value=''}
+function enterApp(){$('loginWrap').classList.add('hide');$('app').classList.add('on');$('uA').textContent=S.user.charAt(0);$('uN').textContent=S.user;$('uR').textContent=S.role;loadDash();loadQ();loadNames()}
 
-// ─── 로그인 ─────────────────────────────────────────────────
-function doLogin() {
-  var u = document.getElementById('iu').value.trim();
-  var p = document.getElementById('ip').value.trim();
-  var btn = document.getElementById('lbtn');
-  if(!u||!p){ sErr('이름과 비밀번호를 입력해주세요.'); return; }
+// ─── 학생 이름 로드 (드롭다운용) ───
+function loadNames(){apiGet('cp_studentNames',{},function(r){if(r.success){S.names=r.names||[];populateSelects()}})}
+function populateSelects(){var opts=S.names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');['ssStudent','bwFilter','prFilter','pcStudent'].forEach(id=>{var el=$(id);if(el){var first=el.options[0].outerHTML;el.innerHTML=first+opts}})}
 
-  btn.disabled=true; btn.textContent='로그인 중...';
-  document.getElementById('lerr').style.display='none';
+// ─── 대시보드 ───
+function loadDash(){sLd(true);apiGet('cp_dashboard',{},function(r){sLd(false);if(r.success){S.students=r.students||[];calcSt();renderAl();render()}else toast(r.error||'로드 실패','te')})}
+function gSt(s){var keys=Object.keys(s);var lk=keys.find(k=>k.indexOf('최근상담일')>-1||k.indexOf('2주상담일')>-1||k.indexOf('마지막상담일')>-1);var v=lk?s[lk]:null;if(!v||v===''||v==='-')return{st:'new',lb:'신규',d:null};var dt=new Date(v);if(isNaN(dt.getTime()))return{st:'new',lb:'신규',d:null};var diff=Math.floor((new Date()-dt)/864e5);if(diff>16)return{st:'overdue',lb:'지연 ('+diff+'일)',d:diff};if(diff>=12)return{st:'soon',lb:diff+'일 경과',d:diff};return{st:'normal',lb:'정상',d:diff}}
+function calcSt(){var t=0,ok=0,sn=0,ov=0;S.students.forEach(s=>{t++;var x=gSt(s).st;if(x==='normal')ok++;else if(x==='soon')sn++;else if(x==='overdue')ov++});$('st0').textContent=t;$('st1').textContent=ok;$('st2').textContent=sn;$('st3').textContent=ov}
+function renderAl(){var urg=S.students.map(s=>Object.assign({},s,{_s:gSt(s)})).filter(s=>s._s.st==='overdue'||s._s.st==='soon').sort((a,b)=>(b._s.d||0)-(a._s.d||0));var p=$('aP'),l=$('aL');if(!urg.length){p.style.display='none';return}p.style.display='block';l.innerHTML=urg.slice(0,8).map(s=>{var c=s._s.st==='overdue'?'var(--rd)':'var(--or)';var nm=esc(String(s[Object.keys(s)[0]]||'—'));return'<div class="si"><span class="sd" style="background:'+c+'"></span><span class="nm">'+nm+'</span><span class="dt">'+esc(s._s.lb)+'</span></div>'}).join('')}
+function render(){var gd=$('gd'),em=$('em'),q=$('sI').value.trim().toLowerCase(),cols=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6'];var list=S.students.filter(s=>{var nm=String(s[Object.keys(s)[0]]||'').toLowerCase();if(q&&nm.indexOf(q)===-1)return false;if(S.filter==='all')return true;return gSt(s).st===S.filter});if(!list.length){gd.innerHTML='';em.style.display='block';return}em.style.display='none';gd.innerHTML=list.map((s,i)=>{var keys=Object.keys(s).filter(k=>k.charAt(0)!=='_');var nm=String(s[keys[0]]||'—');var st=gSt(s);var col=cols[i%cols.length];var pK=keys.find(k=>k.indexOf('학부모')>-1&&k.indexOf('상담일')>-1);var cK=keys.find(k=>k.indexOf('상담회차')>-1||k.indexOf('상담횟수')>-1);var stc=st.st==='normal'?'sn':st.st==='soon'?'ss2':st.st==='overdue'?'so':'snw';return'<div class="cd" onclick="oMod(\''+esc(nm)+'\')"><div class="ch"><div class="cav" style="background:'+col+'">'+esc(nm.charAt(0))+'</div><div><div class="cn">'+esc(nm)+'</div><div class="cm">'+(st.d!==null?st.d+'일 전 상담':'상담 기록 없음')+'</div></div><span class="bds '+stc+'">'+esc(st.lb)+'</span></div><div class="cb"><div class="ir"><span class="l">학부모 상담</span><span class="v">'+esc(String(pK?s[pK]:'—'))+'</span></div><div class="ir"><span class="l">상담 회차</span><span class="v">'+esc(String(cK?s[cK]:'—'))+'</span></div></div><div class="ca" onclick="event.stopPropagation()"><button class="btn bp bs" onclick="startSessionFor(\''+esc(nm)+'\')">🩺 상담</button><button class="btn bo bs" onclick="viewReportsFor(\''+esc(nm)+'\')">📄 리포트</button></div></div>'}).join('')}
+function setF(f){S.filter=f;document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('on',b.dataset.f===f));render()}
 
-  apiPost('cp_login', { user:u, pass:p }, function(res){
-    btn.disabled=false; btn.textContent='로그인';
-    if(res.success){
-      S.user=res.user; S.role=res.role;
-      enterApp();
-    } else {
-      sErr(res.error||'로그인 실패');
-    }
-  });
-}
-function sErr(m){ var e=document.getElementById('lerr'); e.textContent=m; e.style.display='block'; }
-function doLogout(){
-  S.user=''; S.role='';
-  document.getElementById('app').classList.remove('on');
-  document.getElementById('loginWrap').classList.remove('hide');
-  document.getElementById('iu').value=''; document.getElementById('ip').value='';
-}
-function enterApp(){
-  document.getElementById('loginWrap').classList.add('hide');
-  document.getElementById('app').classList.add('on');
-  document.getElementById('uA').textContent=S.user.charAt(0);
-  document.getElementById('uN').textContent=S.user;
-  document.getElementById('uR').textContent=S.role;
-  loadDash(); loadQ();
-}
+// ─── 2. 상담 세션 ───
+function startSessionFor(nm){go('session');$('ssStudent').value=nm;onSessionStudentChange()}
+function onSessionStudentChange(){var nm=$('ssStudent').value;if(!nm){$('briefingText').textContent='학생을 선택하면 AI 브리핑이 생성됩니다.';$('btnStep1').disabled=true;goStep(0);return}$('briefingText').textContent='AI 브리핑 생성 중...';$('btnStep1').disabled=true;apiGet('cp_briefingData',{student:nm},function(r){if(r.success&&r.data){var d=r.data;var txt='';if(typeof d==='string')txt=d;else if(d.briefing)txt=d.briefing;else txt=JSON.stringify(d,null,2);$('briefingText').textContent=txt;$('btnStep1').disabled=false}else{$('briefingText').textContent='브리핑 데이터가 없습니다. 체크리스트를 직접 작성하세요.';$('btnStep1').disabled=false}})}
+function goStep(n){S.sessionStep=n;for(var i=0;i<4;i++){$('stp'+i).classList.toggle('on',i===n);$('sd'+i).className='step-dot'+(i<n?' done':i===n?' cur':'')}if(n===3)buildSessionSummary()}
+function selCk(el){el.parentElement.querySelectorAll('.ck-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel')}
+function getCk(name){var g=document.querySelector('[data-ck="'+name+'"]');if(!g)return'';var sel=g.querySelector('.sel');return sel?sel.textContent:''}
+function buildSessionSummary(){var nm=$('ssStudent').value;var html='<div class="ir"><span class="l">학생</span><span class="v">'+esc(nm)+'</span></div>';html+='<div class="ir"><span class="l">SA (자기진단)</span><span class="v">'+esc(getCk('SA')||'미선택')+'</span></div>';html+='<div class="ir"><span class="l">OB (관찰)</span><span class="v">'+esc(getCk('OB')||'미선택')+'</span></div>';html+='<div class="ir"><span class="l">BL (저해요인)</span><span class="v">'+esc($('ckBL').value||'없음')+'</span></div>';html+='<div class="ir"><span class="l">PF (이행평가)</span><span class="v">'+esc(getCk('PF')||'미선택')+'</span></div>';html+='<div class="ir"><span class="l">목표</span><span class="v">'+esc($('ssGoal').value||'미입력')+'</span></div>';html+='<div class="ir"><span class="l">유형</span><span class="v">'+esc($('ssType').value)+'</span></div>';$('sessionSummary').innerHTML=html}
+function saveSession(){var nm=$('ssStudent').value;if(!nm){toast('학생을 선택하세요','te');return}var btn=$('btnSaveSession');btn.disabled=true;btn.textContent='저장 중...';var ck='SA:'+getCk('SA')+' | OB:'+getCk('OB')+' | BL:'+$('ckBL').value+' | PF:'+getCk('PF');apiPost('cp_saveSession',{data:{studentName:nm,counselor:S.user,checklist:ck,nextGoal:$('ssGoal').value,type:$('ssType').value,briefing:$('briefingText').textContent}},function(r){btn.disabled=false;btn.textContent='✅ 상담 완료 → 대기열 저장';if(r.success){toast('✅ '+nm+' 상담이 대기열에 저장되었습니다.','to');resetSessionForm();loadQ()}else toast(r.error||'저장 실패','te')})}
+function resetSessionForm(){$('ssStudent').value='';goStep(0);$('briefingText').textContent='학생을 선택하면 AI 브리핑이 생성됩니다.';$('btnStep1').disabled=true;document.querySelectorAll('.ck-opt.sel').forEach(o=>o.classList.remove('sel'));$('ckBL').value='';$('ssGoal').value=''}
 
-// ─── 대시보드 ───────────────────────────────────────────────
-function loadDash(){
-  sLd(true);
-  apiGet('cp_dashboard', {}, function(res){
-    sLd(false);
-    if(res.success){ S.students=res.students||[]; calcSt(); renderAl(); render(); }
-    else toast(res.error||'로드 실패','te');
-  });
-}
+// ─── 3. 2주 리포트 ───
+function loadBiweekly(){var nm=$('bwFilter').value;apiGet('cp_biweeklyList',{student:nm},function(r){if(r.success){var reps=r.reports||[];if(!reps.length){$('bwList').innerHTML='<div class="emp"><p>리포트가 없습니다.</p></div>';return}$('bwList').innerHTML=reps.map(rp=>'<div class="rpt-item"><div class="rpt-info"><div class="rpt-name">'+esc(rp.student)+' — '+esc(rp.consultDate||'')+'</div><div class="rpt-date">상담자: '+esc(rp.counselor||'')+' | ID: '+esc(rp.consultId||'')+'</div></div><div class="rpt-acts">'+(rp.shortCode?'<button class="btn bo bs" onclick="copyUrl(\''+esc(rp.shortCode)+'\')">📋 복사</button>':'')+(rp.reportUrl?'<a href="'+esc(rp.reportUrl)+'" target="_blank" class="btn bp bs">열기 ↗</a>':'<span style="color:var(--tx3);font-size:.76rem">URL 없음</span>')+'</div></div>').join('')}else $('bwList').innerHTML='<div class="emp"><p>'+esc(r.error)+'</p></div>'})}
+function viewReportsFor(nm){go('biweekly');$('bwFilter').value=nm;loadBiweekly()}
 
-function gSt(s){
-  var keys=Object.keys(s);
-  var lk=keys.find(function(k){ return k.indexOf('최근상담일')>-1||k.indexOf('2주상담일')>-1||k.indexOf('마지막상담일')>-1; });
-  var v=lk?s[lk]:null;
-  if(!v||v===''||v==='-') return {st:'new',lb:'신규',d:null};
-  var dt=new Date(v); if(isNaN(dt.getTime())) return {st:'new',lb:'신규',d:null};
-  var diff=Math.floor((new Date()-dt)/864e5);
-  if(diff>16) return {st:'overdue',lb:'지연 ('+diff+'일)',d:diff};
-  if(diff>=12) return {st:'soon',lb:diff+'일 경과',d:diff};
-  return {st:'normal',lb:'정상',d:diff};
-}
+// ─── 4. 학부모 리포트 ───
+function loadParentReports(){var nm=$('prFilter').value;apiGet('cp_reportList',{student:nm},function(r){if(r.success){var reps=r.reports||[];if(!reps.length){$('prList').innerHTML='<div class="emp"><p>리포트가 없습니다.</p></div>';return}$('prList').innerHTML=reps.map(rp=>'<div class="rpt-item"><div class="rpt-info"><div class="rpt-name">'+esc(rp.student)+'</div><div class="rpt-date">생성: '+esc(rp.generatedAt||'')+'</div></div><div class="rpt-acts">'+(rp.shortCode?'<button class="btn bo bs" onclick="copyUrl(\''+esc(rp.shortCode)+'\')">📋 복사</button>':'')+(rp.reportUrl?'<a href="'+esc(rp.reportUrl)+'" target="_blank" class="btn bp bs">열기 ↗</a>':'')+'</div></div>').join('')}else $('prList').innerHTML='<div class="emp"><p>'+esc(r.error)+'</p></div>'})}
+function generateNewReport(){var nm=$('prFilter').value;if(!nm){toast('학생을 먼저 선택하세요','te');return}if(!confirm(nm+' 학생의 학부모 리포트를 새로 생성합니다.\n(약 15~30초 소요) 계속하시겠습니까?'))return;sLd(true);apiPost('cp_generateReport',{student:nm},function(r){sLd(false);if(r.success){toast('✅ '+nm+' 리포트 생성 완료','to');loadParentReports()}else toast(r.error||'생성 실패','te')})}
 
-function calcSt(){
-  var t=0,ok=0,sn=0,ov=0;
-  S.students.forEach(function(s){ t++; var x=gSt(s).st; if(x==='normal')ok++; else if(x==='soon')sn++; else if(x==='overdue')ov++; });
-  document.getElementById('st0').textContent=t;
-  document.getElementById('st1').textContent=ok;
-  document.getElementById('st2').textContent=sn;
-  document.getElementById('st3').textContent=ov;
-}
+// ─── 5. 학부모 상담 기록 ───
+function loadParentHistory(){var nm=$('pcStudent').value;if(!nm){$('pcHistPanel').style.display='none';return}apiGet('cp_parentConsultHistory',{student:nm},function(r){if(r.success&&r.records&&r.records.length>0){$('pcHistPanel').style.display='block';$('pcHistList').innerHTML=r.records.map(rc=>'<div style="padding:10px 0;border-bottom:1px solid var(--bd2)"><div style="font-weight:600;font-size:.85rem">'+esc(rc[Object.keys(rc)[1]]||'')+' · '+esc(rc[Object.keys(rc)[2]]||'')+'</div><div style="font-size:.8rem;color:var(--tx2);margin-top:4px">'+esc(rc[Object.keys(rc)[3]]||'')+'</div></div>').join('')}else $('pcHistPanel').style.display='none'})}
+function saveParentConsult(){var nm=$('pcStudent').value;if(!nm){toast('학생을 선택하세요','te');return}var btn=$('btnSavePC');btn.disabled=true;btn.textContent='저장 중...';apiPost('cp_saveParentConsult',{student:nm,method:$('pcMethod').value,summary:$('pcSummary').value,request:$('pcRequest').value,action_detail:$('pcAction').value,nextStep:$('pcNext').value,recorder:S.user},function(r){btn.disabled=false;btn.textContent='💾 상담 기록 저장';if(r.success){toast('✅ 학부모 상담 기록 저장 완료','to');$('pcSummary').value='';$('pcRequest').value='';$('pcAction').value='';$('pcNext').value='';loadParentHistory()}else toast(r.error||'저장 실패','te')})}
 
-function renderAl(){
-  var urg=S.students.map(function(s){return Object.assign({},s,{_s:gSt(s)});})
-    .filter(function(s){return s._s.st==='overdue'||s._s.st==='soon';})
-    .sort(function(a,b){return(b._s.d||0)-(a._s.d||0);});
-  var p=document.getElementById('aP'),l=document.getElementById('aL');
-  if(!urg.length){p.style.display='none';return;}
-  p.style.display='block';
-  l.innerHTML=urg.slice(0,8).map(function(s){
-    var c=s._s.st==='overdue'?'var(--rd)':'var(--or)';
-    var nm=esc(String(s[Object.keys(s)[0]]||'—'));
-    return '<div class="si"><span class="sd" style="background:'+c+'"></span><span class="nm">'+nm+'</span><span class="dt">'+esc(s._s.lb)+'</span></div>';
-  }).join('');
-}
+// ─── 6. 대기열 ───
+function loadQ(){apiGet('cp_queueStatus',{},function(r){if(!r.success)return;var st=r.stats;$('qW').textContent=st.waiting;$('qP').textContent=st.processing;var b=$('qB'),pn=st.waiting+st.processing;if(pn>0){b.textContent=pn;b.style.display='inline'}else b.style.display='none'})}
+function loadQueueFull(){sLd(true);apiGet('cp_queueStatus',{},function(r){sLd(false);if(!r.success){toast(r.error,'te');return}var st=r.stats;$('qqW').textContent=st.waiting;$('qqP').textContent=st.processing;$('qqD').textContent=st.done;$('qqE').textContent=st.error;$('qW').textContent=st.waiting;$('qP').textContent=st.processing;var items=r.items||[];if(!items.length){$('qList').innerHTML='<div class="emp"><p>대기열이 비어있습니다.</p></div>';return}$('qList').innerHTML=items.map(it=>{var sc=it.status==='대기중'?'q-waiting':it.status==='처리중'?'q-processing':it.status==='완료'?'q-done':'q-error';return'<div class="q-item"><div class="q-info"><div class="q-name">'+esc(it.student)+'</div><div class="q-meta">상담자: '+esc(it.counselor)+' | ID: '+esc(it.id)+'</div></div><span class="q-badge '+sc+'">'+esc(it.status)+'</span></div>'}).join('')})}
+function resetQueue(){if(!confirm('처리중 → 대기중으로 변경합니다. 계속?'))return;sLd(true);apiPost('cp_resetQueue',{},function(r){sLd(false);if(r.success){toast('✅ 멈춤 해제 완료','to');loadQueueFull();loadQ()}else toast(r.error,'te')})}
+function forceProcess(){if(!confirm('대기 중인 항목을 강제 일괄 처리합니다. 계속?'))return;sLd(true);apiPost('cp_forceProcess',{},function(r){sLd(false);if(r.success){toast('✅ 강제 처리 시작됨','to');setTimeout(loadQueueFull,3000);loadQ()}else toast(r.error,'te')})}
 
-function render(){
-  var gd=document.getElementById('gd'),em=document.getElementById('em');
-  var q=document.getElementById('sI').value.trim().toLowerCase();
-  var cols=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6'];
+// ─── URL 복사 ───
+function copyUrl(code){var url=code;if(!code.startsWith('http'))url='https://go.trueasheard.com/'+code;navigator.clipboard.writeText(url).then(()=>toast('📋 URL 복사 완료','to')).catch(()=>{prompt('URL을 복사하세요:',url)})}
 
-  var list=S.students.filter(function(s){
-    var nm=String(s[Object.keys(s)[0]]||'').toLowerCase();
-    if(q&&nm.indexOf(q)===-1) return false;
-    if(S.filter==='all') return true;
-    return gSt(s).st===S.filter;
-  });
+// ─── 네비게이션 ───
+function go(p){S.page=p;document.querySelectorAll('.ni').forEach(n=>n.classList.toggle('on',n.dataset.p===p));document.querySelectorAll('.pg').forEach(pg=>pg.classList.toggle('on',pg.id==='pg-'+p));var tt={dashboard:'대시보드',session:'2주 학생 상담',biweekly:'2주 리포트','parent-report':'학부모 리포트','parent-consult':'학부모 상담 기록',queue:'대기열 관리'};$('pT').textContent=tt[p]||p;cSB();if(p==='biweekly')loadBiweekly();if(p==='parent-report')loadParentReports();if(p==='queue')loadQueueFull()}
+function tSB(){$('sb').classList.toggle('open');$('mov').classList.toggle('open')}
+function cSB(){$('sb').classList.remove('open');$('mov').classList.remove('open')}
 
-  if(!list.length){gd.innerHTML='';em.style.display='block';return;}
-  em.style.display='none';
+// ─── 모달 ───
+function oMod(nm){var s=S.students.find(x=>String(x[Object.keys(x)[0]])===nm);if(!s)return;$('mT').textContent=nm+' — 상세 정보';var keys=Object.keys(s).filter(k=>k.charAt(0)!=='_');var h='';keys.forEach(k=>{var v=s[k];if(v===''||v==null)return;h+='<div class="ir" style="padding:6px 0;border-bottom:1px solid var(--bd2)"><span class="l">'+esc(k)+'</span><span class="v">'+esc(String(v))+'</span></div>'});$('mB').innerHTML=h;$('mA').onclick=()=>{cMod();startSessionFor(nm)};$('modal').classList.add('on')}
+function cMod(){$('modal').classList.remove('on')}
 
-  gd.innerHTML=list.map(function(s,i){
-    var keys=Object.keys(s).filter(function(k){return k.charAt(0)!=='_';});
-    var nm=String(s[keys[0]]||'—');
-    var st=gSt(s);
-    var col=cols[i%cols.length];
-    var pK=keys.find(function(k){return k.indexOf('학부모')>-1&&k.indexOf('상담일')>-1;});
-    var cK=keys.find(function(k){return k.indexOf('상담회차')>-1||k.indexOf('상담횟수')>-1;});
-    var stc=st.st==='normal'?'sn':st.st==='soon'?'ss2':st.st==='overdue'?'so':'snw';
-
-    return '<div class="cd" onclick="oMod(\''+esc(nm)+'\')"><div class="ch">'+
-      '<div class="cav" style="background:'+col+'">'+esc(nm.charAt(0))+'</div>'+
-      '<div><div class="cn">'+esc(nm)+'</div><div class="cm">'+(st.d!==null?st.d+'일 전 상담':'상담 기록 없음')+'</div></div>'+
-      '<span class="bds '+stc+'">'+esc(st.lb)+'</span></div>'+
-      '<div class="cb"><div class="ir"><span class="l">학부모 상담</span><span class="v">'+esc(String(pK?s[pK]:'—'))+'</span></div>'+
-      '<div class="ir"><span class="l">상담 회차</span><span class="v">'+esc(String(cK?s[cK]:'—'))+'</span></div></div>'+
-      '<div class="ca" onclick="event.stopPropagation()">'+
-      '<button class="btn bp bs" onclick="sC(\''+esc(nm)+'\')">🩺 상담</button>'+
-      '<button class="btn bo bs" onclick="vR(\''+esc(nm)+'\')">📄 리포트</button></div></div>';
-  }).join('');
-}
-
-function setF(f){S.filter=f;document.querySelectorAll('.fb').forEach(function(b){b.classList.toggle('on',b.dataset.f===f);});render();}
-
-// ─── 대기열 ─────────────────────────────────────────────────
-function loadQ(){
-  apiGet('cp_queueStatus',{},function(res){
-    if(!res.success) return;
-    var st=res.stats;
-    document.getElementById('qW').textContent=st.waiting;
-    document.getElementById('qP').textContent=st.processing;
-    var b=document.getElementById('qB'), pn=st.waiting+st.processing;
-    if(pn>0){b.textContent=pn;b.style.display='inline';}else b.style.display='none';
-  });
-}
-
-// ─── 네비게이션 ─────────────────────────────────────────────
-function go(p){
-  S.page=p;
-  document.querySelectorAll('.ni').forEach(function(n){n.classList.toggle('on',n.dataset.p===p);});
-  document.querySelectorAll('.pg').forEach(function(pg){pg.classList.toggle('on',pg.id==='pg-'+p);});
-  var tt={dashboard:'대시보드',session:'2주 학생 상담',biweekly:'2주 리포트','parent-report':'학부모 리포트','parent-consult':'학부모 상담 기록',queue:'대기열 관리'};
-  document.getElementById('pT').textContent=tt[p]||p;
-  cSB();
-}
-
-function tSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('mov').classList.toggle('open');}
-function cSB(){document.getElementById('sb').classList.remove('open');document.getElementById('mov').classList.remove('open');}
-
-function oMod(nm){
-  var s=S.students.find(function(x){return String(x[Object.keys(x)[0]])===nm;});
-  if(!s)return;
-  document.getElementById('mT').textContent=nm+' — 상세 정보';
-  var keys=Object.keys(s).filter(function(k){return k.charAt(0)!=='_';});
-  var h='';
-  keys.forEach(function(k){var v=s[k];if(v===''||v==null)return;h+='<div class="ir" style="padding:6px 0;border-bottom:1px solid var(--bd2)"><span class="l">'+esc(k)+'</span><span class="v">'+esc(String(v))+'</span></div>';});
-  document.getElementById('mB').innerHTML=h;
-  document.getElementById('mA').onclick=function(){cMod();sC(nm);};
-  document.getElementById('modal').classList.add('on');
-}
-function cMod(){document.getElementById('modal').classList.remove('on');}
-
-function sC(nm){toast(nm+' 상담 — 다음 단계에서 구현됩니다.');}
-function vR(nm){toast(nm+' 리포트 — 다음 단계에서 구현됩니다.');}
-
-function sLd(v){document.getElementById('ld').style.display=v?'flex':'none';}
-function toast(m,t){var c=document.getElementById('tC'),e=document.createElement('div');e.className='tst'+(t==='te'?' te':t==='to'?' to':'');e.textContent=m;c.appendChild(e);setTimeout(function(){e.remove();},3500);}
-function esc(s){var e=document.createElement('span');e.textContent=s;return e.innerHTML;}
+// ─── 유틸 ───
+function $(id){return document.getElementById(id)}
+function sLd(v){$('ld').style.display=v?'flex':'none'}
+function toast(m,t){var c=$('tC'),e=document.createElement('div');e.className='tst'+(t==='te'?' te':t==='to'?' to':'');e.textContent=m;c.appendChild(e);setTimeout(()=>e.remove(),3500)}
+function esc(s){var e=document.createElement('span');e.textContent=s;return e.innerHTML}
 </script>
 </body>
 </html>
