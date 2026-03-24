@@ -316,18 +316,33 @@ button{cursor:pointer;border:none;background:none}
 var API='/api/proxy';
 var S={user:'',role:'',students:[],names:[],filter:'all',page:'dashboard'};
 
+// ═══ 보안 세션 관리 ═══
+var GO_SESS='go_sess',GO_TTL=4*60*60*1000,GO_IDLE=30*60*1000,_goIdleTm=null;
+function goSave(){sessionStorage.setItem(GO_SESS,JSON.stringify({user:S.user,role:S.role,loginAt:Date.now(),lastActive:Date.now()}));}
+function goLoad(){try{var r=sessionStorage.getItem(GO_SESS);if(!r)return null;var s=JSON.parse(r);if(Date.now()-s.loginAt>GO_TTL||Date.now()-s.lastActive>GO_IDLE){sessionStorage.removeItem(GO_SESS);return null;}return s;}catch(e){sessionStorage.removeItem(GO_SESS);return null;}}
+function goTouch(){try{var r=sessionStorage.getItem(GO_SESS);if(!r)return;var s=JSON.parse(r);s.lastActive=Date.now();sessionStorage.setItem(GO_SESS,JSON.stringify(s));}catch(e){}}
+function goClear(){sessionStorage.removeItem(GO_SESS);if(_goIdleTm)clearTimeout(_goIdleTm);}
+function goResetIdle(){if(_goIdleTm)clearTimeout(_goIdleTm);goTouch();_goIdleTm=setTimeout(function(){if(S.user){toast('30분간 활동 없어 자동 로그아웃','te');setTimeout(doLogout,2000);}},GO_IDLE);}
+['click','keydown','scroll','touchstart'].forEach(function(ev){document.addEventListener(ev,goResetIdle,{passive:true});});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&S.user){if(!goLoad()){toast('세션 만료','te');setTimeout(doLogout,1000);}}});
+
 $('ip').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
 $('iu').addEventListener('keydown',function(e){if(e.key==='Enter')$('ip').focus()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')cMod()});
 
-function apiGet(a,p,cb){var qs=new URLSearchParams(Object.assign({action:a},p||{}));fetch(API+'?'+qs).then(r=>r.json()).then(cb).catch(e=>cb({success:false,error:e.message}))}
-function apiPost(a,b,cb){fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:a},b||{}))}).then(r=>r.json()).then(cb).catch(e=>cb({success:false,error:e.message}))}
+function apiGet(a,p,cb){var qs=new URLSearchParams(Object.assign({action:a},p||{}));fetch(API+'?'+qs).then(function(r){return r.json()}).then(function(data){
+if(data&&!data.success&&data.error&&/인증|토큰|권한/.test(data.error)){goClear();doLogout();toast('인증 만료','te');return;}goTouch();cb(data);}).catch(function(e){cb({success:false,error:e.message})})}
+function apiPost(a,b,cb){fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:a},b||{}))}).then(function(r){return r.json()}).then(function(data){
+if(data&&!data.success&&data.error&&/인증|토큰|권한/.test(data.error)){goClear();doLogout();toast('인증 만료','te');return;}goTouch();cb(data);}).catch(function(e){cb({success:false,error:e.message})})}
 
 // Login
-function doLogin(){var u=$('iu').value.trim(),p=$('ip').value.trim(),btn=$('lbtn');if(!u||!p){sErr('이름과 비밀번호를 입력해주세요.');return}btn.disabled=true;btn.textContent='로그인 중...';$('lerr').style.display='none';apiPost('cp_login',{user:u,pass:p},function(r){btn.disabled=false;btn.textContent='로그인';if(r.success){S.user=r.user;S.role=r.role;enterApp()}else sErr(r.error||'로그인 실패')})}
+function doLogin(){var u=$('iu').value.trim(),p=$('ip').value.trim(),btn=$('lbtn');if(!u||!p){sErr('이름과 비밀번호를 입력해주세요.');return}btn.disabled=true;btn.textContent='로그인 중...';$('lerr').style.display='none';apiPost('cp_login',{user:u,pass:p},function(r){btn.disabled=false;btn.textContent='로그인';if(r.success){S.user=r.user;S.role=r.role;goSave();enterApp()}else sErr(r.error||'로그인 실패')})}
 function sErr(m){var e=$('lerr');e.textContent=m;e.style.display='block'}
-function doLogout(){S.user='';S.role='';$('app').classList.remove('on');$('loginWrap').classList.remove('hide');$('iu').value='';$('ip').value=''}
-function enterApp(){$('loginWrap').classList.add('hide');$('app').classList.add('on');$('uA').textContent=S.user.charAt(0);$('uN').textContent=S.user;$('uR').textContent=S.role;loadDash();loadQ();loadNames();startQueuePolling()}
+function doLogout(){goClear();S.user='';S.role='';S.students=[];S.names=[];$('app').classList.remove('on');$('loginWrap').classList.remove('hide');$('iu').value='';$('ip').value=''}
+function enterApp(){$('loginWrap').classList.add('hide');$('app').classList.add('on');$('uA').textContent=S.user.charAt(0);$('uN').textContent=S.user;$('uR').textContent=S.role;goResetIdle();loadDash();loadQ();loadNames();startQueuePolling()}
+
+// ★ 자동 세션 복원
+(function(){var sess=goLoad();if(sess&&sess.user){S.user=sess.user;S.role=sess.role;enterApp();}})();
 
 // Names
 function loadNames(){apiGet('cp_studentNames',{},function(r){if(r.success){S.names=r.names||[];populateSelects()}})}
