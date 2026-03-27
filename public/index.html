@@ -317,12 +317,12 @@ var API='/api/proxy';
 var S={user:'',role:'',students:[],names:[],filter:'all',page:'dashboard'};
 
 // ═══ 보안 세션 관리 ═══
-var GO_SESS='go_sess',GO_TTL=4*60*60*1000,GO_IDLE=30*60*1000,_goIdleTm=null;
+var GO_SESS='go_sess',GO_TTL=9*60*60*1000,GO_IDLE=2*60*60*1000,_goIdleTm=null;
 function goSave(){sessionStorage.setItem(GO_SESS,JSON.stringify({user:S.user,role:S.role,loginAt:Date.now(),lastActive:Date.now()}));}
 function goLoad(){try{var r=sessionStorage.getItem(GO_SESS);if(!r)return null;var s=JSON.parse(r);if(Date.now()-s.loginAt>GO_TTL||Date.now()-s.lastActive>GO_IDLE){sessionStorage.removeItem(GO_SESS);return null;}return s;}catch(e){sessionStorage.removeItem(GO_SESS);return null;}}
 function goTouch(){try{var r=sessionStorage.getItem(GO_SESS);if(!r)return;var s=JSON.parse(r);s.lastActive=Date.now();sessionStorage.setItem(GO_SESS,JSON.stringify(s));}catch(e){}}
 function goClear(){sessionStorage.removeItem(GO_SESS);if(_goIdleTm)clearTimeout(_goIdleTm);}
-function goResetIdle(){if(_goIdleTm)clearTimeout(_goIdleTm);goTouch();_goIdleTm=setTimeout(function(){if(S.user){toast('30분간 활동 없어 자동 로그아웃','te');setTimeout(doLogout,2000);}},GO_IDLE);}
+function goResetIdle(){if(_goIdleTm)clearTimeout(_goIdleTm);goTouch();_goIdleTm=setTimeout(function(){if(S.user){toast('2시간 활동 없어 자동 로그아웃','te');setTimeout(doLogout,2000);}},GO_IDLE);}
 ['click','keydown','scroll','touchstart'].forEach(function(ev){document.addEventListener(ev,goResetIdle,{passive:true});});
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&S.user){if(!goLoad()){toast('세션 만료','te');setTimeout(doLogout,1000);}}});
 
