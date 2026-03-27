@@ -330,9 +330,10 @@ $('ip').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
 $('iu').addEventListener('keydown',function(e){if(e.key==='Enter')$('ip').focus()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')cMod()});
 
-function apiGet(a,p,cb){var qs=new URLSearchParams(Object.assign({action:a},p||{}));fetch(API+'?'+qs).then(function(r){return r.json()}).then(function(data){
+function _fetchRetry(fn,retries,attempt){retries=retries||2;attempt=attempt||0;return fn().catch(function(e){if(attempt>=retries)throw e;return new Promise(function(ok){setTimeout(ok,1000*(attempt+1))}).then(function(){return _fetchRetry(fn,retries,attempt+1)})});}
+function apiGet(a,p,cb){var qs=new URLSearchParams(Object.assign({action:a},p||{}));_fetchRetry(function(){return fetch(API+'?'+qs).then(function(r){return r.json()})}).then(function(data){
 if(data&&!data.success&&data.error&&/인증|토큰|권한/.test(data.error)){goClear();doLogout();toast('인증 만료','te');return;}goTouch();cb(data);}).catch(function(e){cb({success:false,error:e.message})})}
-function apiPost(a,b,cb){fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:a},b||{}))}).then(function(r){return r.json()}).then(function(data){
+function apiPost(a,b,cb){_fetchRetry(function(){return fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:a},b||{}))}).then(function(r){return r.json()})}).then(function(data){
 if(data&&!data.success&&data.error&&/인증|토큰|권한/.test(data.error)){goClear();doLogout();toast('인증 만료','te');return;}goTouch();cb(data);}).catch(function(e){cb({success:false,error:e.message})})}
 
 // Login

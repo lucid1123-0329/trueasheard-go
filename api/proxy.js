@@ -2,6 +2,7 @@
 // Edge 25초 제한 → Serverless 60초로 변경 (리포트 생성 타임아웃 해결)
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0HcYFu1zEAe7NjEmf3mT7oC2o6ZL84AxzQXryAwVX5gC5i7FBljeWdaUPVNx86Ct2/exec';
+const FETCH_TIMEOUT = 55000; // 55초
 
 export const config = {
   maxDuration: 60
@@ -20,6 +21,9 @@ export default async function handler(req, res) {
     return res.status(204).end();
   }
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+
   try {
     let gasResponse;
 
@@ -30,12 +34,13 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json' },
         body: body,
         redirect: 'follow',
+        signal: controller.signal,
       });
     } else {
       const url = new URL(req.url, `https://${req.headers.host}`);
       const params = url.searchParams.toString();
       const target = APPS_SCRIPT_URL + (params ? '?' + params : '');
-      gasResponse = await fetch(target, { redirect: 'follow' });
+      gasResponse = await fetch(target, { redirect: 'follow', signal: controller.signal });
     }
 
     const text = await gasResponse.text();
@@ -44,6 +49,11 @@ export default async function handler(req, res) {
 
   } catch (err) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    return res.status(500).json({ success: false, error: err.message });
+    if (err.name === 'AbortError') {
+      return res.status(504).json({ ok: false, error: '서버 응답 시간 초과. 잠시 후 다시 시도해주세요.' });
+    }
+    return res.status(502).json({ ok: false, error: '서버 연결 실패: ' + err.message });
+  } finally {
+    clearTimeout(timer);
   }
 }
